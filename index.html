@@ -14,7 +14,9 @@
           return;
         }
 
-        const userId = liff.getContext().userId;
+        // ★ここが安定版（重要）
+        const profile = await liff.getProfile();
+        const userId = profile.userId;
 
         const formUrl =
           "https://docs.google.com/forms/d/e/1FAIpQLSdqrYNFsOUzaRosfdxtFfzFJh-rkyYJtZjCg3t2cGcclqKToA/viewform" +
@@ -27,3 +29,4 @@
     </script>
   </body>
 </html>
+
