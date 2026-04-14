@@ -55,6 +55,7 @@
       async function send() {
         await fetch("https://script.google.com/macros/s/AKfycbyPDfV-FglJeK_8tdPoQ8BN6B0elN-1m5lLhpf3beH4oudwtRL67O77TeC3SW7adB0/exec", {
           method: "POST",
+          mode: "no-cors",
           headers: {
             "Content-Type": "application/json"
           },
