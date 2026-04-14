@@ -1,11 +1,21 @@
 <!DOCTYPE html>
 <html>
   <body>
-    loading...
+    <h3>ヨガ数秘学診断</h3>
+
+    名前<br>
+    <input id="name"><br><br>
+
+    生年月日<br>
+    <input id="birth" placeholder="1990-01-01"><br><br>
+
+    <button onclick="send()">送信</button>
 
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
     <script>
+      let userId = "";
+
       async function main() {
         await liff.init({ liffId: "2009800795-TjgaXLF7" });
 
@@ -15,22 +25,20 @@
         }
 
         const profile = await liff.getProfile();
+        userId = profile.userId;
+      }
 
-        const name = "test"; // フォーム化するならここを入力にする
-        const birth = "1990-01-01"; // 同上
-
-        const payload = {
-          userId: profile.userId,
-          name: name,
-          birth: birth
-        };
-
-        fetch("＜https://script.google.com/macros/s/AKfycbyPDfV-FglJeK_8tdPoQ8BN6B0elN-1m5lLhpf3beH4oudwtRL67O77TeC3SW7adB0/exec＞", {
+      async function send() {
+        await fetch("GAS_URL", {
           method: "POST",
-          body: JSON.stringify(payload)
+          body: JSON.stringify({
+            userId,
+            name: document.getElementById("name").value,
+            birth: document.getElementById("birth").value
+          })
         });
 
-        document.body.innerHTML = "送信完了";
+        document.body.innerHTML = "完了";
       }
 
       main();
