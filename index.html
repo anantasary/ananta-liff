@@ -7,24 +7,33 @@
 
     <script>
       async function main() {
-        await liff.init({ liffId: "2009800795-TjgaXLF7" });
+        try {
+          await liff.init({ liffId: "2009800795-TjgaXLF7" });
 
-        if (!liff.isLoggedIn()) {
-          liff.login();
-          return;
+          if (!liff.isLoggedIn()) {
+            liff.login();
+            return;
+          }
+
+          // 安定取得（必ず取れる方法）
+          const profile = await liff.getProfile();
+          const userId = profile.userId;
+
+          // あなたのフォーム（確定したentry番号）
+          const formUrl =
+            "https://docs.google.com/forms/d/e/1FAIpQLSdqrYNFsOUzaRosfdxtFfzFJh-rkyYJtZjCg3t2cGcclqKToA/viewform" +
+            "?entry.1898869819=" + encodeURIComponent(userId);
+
+          // LIFF内で開く（安定）
+          liff.openWindow({
+            url: formUrl,
+            external: false
+          });
+
+        } catch (e) {
+          document.body.innerHTML = "error";
+          console.log(e);
         }
-
-        const profile = await liff.getProfile();
-        const userId = profile.userId;
-
-        const formUrl =
-          "https://docs.google.com/forms/d/e/1FAIpQLSdqrYNFsOUzaRosfdxtFfzFJh-rkyYJtZjCg3t2cGcclqKToA/viewform" +
-          "?entry.1975951407=" + encodeURIComponent(userId);
-
-        liff.openWindow({
-          url: formUrl,
-          external: false
-        });
       }
 
       main();
