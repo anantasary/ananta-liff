@@ -14,12 +14,11 @@
           return;
         }
 
-        const context = liff.getContext();
+        const userId =
+          liff.getContext()?.userId ||
+          (await liff.getProfile()).userId;
 
-        document.body.innerHTML =
-          context && context.userId
-            ? context.userId
-            : "userIdが取得できません";
+        document.body.innerHTML = userId;
       }
 
       main();
