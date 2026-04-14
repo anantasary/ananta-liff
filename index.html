@@ -1,20 +1,29 @@
-<script>
-async function main() {
-  await liff.init({ liffId: "2009800795-TjgaXLF7" });
+<!DOCTYPE html>
+<html>
+  <body>
+    loading...
 
-  if (!liff.isLoggedIn()) {
-    liff.login();
-    return;
-  }
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
-  const userId = liff.getContext().userId;
+    <script>
+      async function main() {
+        await liff.init({ liffId: "2009800795-TjgaXLF7" });
 
-  const formUrl =
-    "https://docs.google.com/forms/d/e/1FAIpQLSdqrYNFsOUzaRosfdxtFfzFJh-rkyYJtZjCg3t2cGcclqKToA/viewform" +
-    "?entry.XXXXXXXX=" + encodeURIComponent(userId);
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
 
-  window.location.href = formUrl;
-}
+        const userId = liff.getContext().userId;
 
-main();
-</script>
+        const formUrl =
+          "https://docs.google.com/forms/d/e/1FAIpQLSdqrYNFsOUzaRosfdxtFfzFJh-rkyYJtZjCg3t2cGcclqKToA/viewform" +
+          "?entry.XXXXXXX=" + encodeURIComponent(userId);
+
+        window.location.href = formUrl;
+      }
+
+      main();
+    </script>
+  </body>
+</html>
