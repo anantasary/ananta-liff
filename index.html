@@ -7,33 +7,30 @@
 
     <script>
       async function main() {
-        try {
-          await liff.init({ liffId: "2009800795-TjgaXLF7" });
+        await liff.init({ liffId: "2009800795-TjgaXLF7" });
 
-          if (!liff.isLoggedIn()) {
-            liff.login();
-            return;
-          }
-
-          // 安定取得（必ず取れる方法）
-          const profile = await liff.getProfile();
-          const userId = profile.userId;
-
-          // あなたのフォーム（確定したentry番号）
-          const formUrl =
-            "https://docs.google.com/forms/d/e/1FAIpQLSdqrYNFsOUzaRosfdxtFfzFJh-rkyYJtZjCg3t2cGcclqKToA/viewform" +
-            "?entry.1898869819=" + encodeURIComponent(userId);
-
-          // LIFF内で開く（安定）
-          liff.openWindow({
-            url: formUrl,
-            external: false
-          });
-
-        } catch (e) {
-          document.body.innerHTML = "error";
-          console.log(e);
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
         }
+
+        const profile = await liff.getProfile();
+
+        const name = "test"; // フォーム化するならここを入力にする
+        const birth = "1990-01-01"; // 同上
+
+        const payload = {
+          userId: profile.userId,
+          name: name,
+          birth: birth
+        };
+
+        fetch("＜ここにGASのURL＞", {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+
+        document.body.innerHTML = "送信完了";
       }
 
       main();
