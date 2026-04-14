@@ -1,13 +1,33 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      body {
+        font-size: 20px;
+        padding: 20px;
+      }
+      input {
+        font-size: 20px;
+        padding: 10px;
+        width: 90%;
+        margin-bottom: 15px;
+      }
+      button {
+        font-size: 20px;
+        padding: 12px;
+        width: 100%;
+      }
+    </style>
+  </head>
+
   <body>
-    <h3>ヨガ数秘学診断</h3>
 
     名前<br>
-    <input id="name"><br><br>
+    <input id="name">
 
     生年月日<br>
-    <input id="birth" placeholder="1990-01-01"><br><br>
+    <input id="birth" placeholder="1990-01-01">
 
     <button onclick="send()">送信</button>
 
@@ -32,15 +52,20 @@
         await fetch("GAS_URL", {
           method: "POST",
           body: JSON.stringify({
-            userId,
+            userId: userId,
             name: document.getElementById("name").value,
             birth: document.getElementById("birth").value
           })
         });
 
-        document.body.innerHTML = "完了";
+        document.body.innerHTML = "送信完了";
       }
 
+      main();
+    </script>
+
+  </body>
+</html>
       main();
     </script>
   </body>
