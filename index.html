@@ -8,6 +8,7 @@
         padding: 20px;
         font-family: sans-serif;
       }
+
       input {
         font-size: 20px;
         padding: 10px;
@@ -15,6 +16,7 @@
         margin-bottom: 15px;
         box-sizing: border-box;
       }
+
       button {
         font-size: 20px;
         padding: 12px;
@@ -31,7 +33,7 @@
     生年月日（西暦8桁）<br>
     <input id="birth" placeholder="19900101">
 
-    <button id="btn" onclick="send()" disabled>送信</button>
+    <button onclick="send()">送信</button>
 
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
@@ -50,12 +52,9 @@
           const profile = await liff.getProfile();
           userId = profile.userId;
 
-          // ★ここが重要
-          document.getElementById("btn").disabled = false;
-
         } catch (e) {
-          console.log(e);
           alert("初期化エラー");
+          console.log(e);
         }
       }
 
@@ -64,7 +63,7 @@
           await fetch("GAS_URL", {
             method: "POST",
             body: JSON.stringify({
-              userId: userId || "no-id",
+              userId: userId,
               name: document.getElementById("name").value,
               birth: document.getElementById("birth").value
             })
@@ -75,8 +74,8 @@
           liff.closeWindow();
 
         } catch (e) {
+          alert("送信エラー");
           console.log(e);
-          alert("エラーが発生しました");
         }
       }
 
