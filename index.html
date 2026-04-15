@@ -4,98 +4,116 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ヨガ数秘学 診断</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&display=swap" rel="stylesheet">
   <style>
-    /* くすみを排除した高発色デザイン */
+    /* * 「黄色」を排除し、深いネイビー（#1A253A）と
+     * 真鍮のようなゴールド（#C3A461）で構成
+     */
     body { 
       font-size: 16px; 
-      padding: 40px 20px; 
-      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif; 
-      background-color: #f7f9fa; 
-      color: #333; 
+      padding: 50px 20px; 
+      font-family: 'Noto Serif JP', serif; /* 明朝体で品格を */
+      background-color: #f4f6f8; /* 落ち着いたグレー */
+      color: #1A253A; /* 深いネイビー */
     }
     .container { 
-      max-width: 400px; 
+      max-width: 420px; 
       margin: 0 auto; 
       background: #ffffff; 
-      padding: 35px 25px; 
-      border-radius: 24px; 
-      box-shadow: 0 15px 35px rgba(0,0,0,0.06); 
+      padding: 40px 30px; 
+      border-radius: 12px; 
+      box-shadow: 0 10px 30px rgba(26, 37, 58, 0.08); /* 深いネイビーを帯びた影 */
+      border: 1px solid #e1e8ed;
     }
     
     h2 { 
-      font-size: 19px; 
+      font-size: 21px; 
       text-align: center; 
-      color: #d4af37; /* 明るいゴールド */
-      margin-bottom: 30px; 
-      font-weight: bold;
+      color: #1A253A; 
+      margin-bottom: 35px; 
+      font-weight: 700;
+      letter-spacing: 0.1em;
     }
     
+    /* 選択肢：枠線をゴールドに */
     .radio-label { 
       display: flex; 
       align-items: center; 
-      margin-bottom: 12px; 
-      padding: 18px; 
+      margin-bottom: 15px; 
+      padding: 20px; 
       background: #fff; 
-      border: 2px solid #f0f0f0; 
-      border-radius: 16px; 
+      border: 1px solid #e1e8ed; 
+      border-radius: 8px; 
       cursor: pointer; 
-      font-weight: bold; 
+      font-weight: 500; 
+      transition: 0.3s;
     }
     .radio-label:has(input:checked) {
-      border-color: #d4af37;
-      background: #fffdf9;
+      border-color: #C3A461; /* 真鍮ゴールド */
+      background-color: #fbf9f5;
+      box-shadow: 0 4px 12px rgba(195, 164, 97, 0.15);
     }
     input[type="radio"] { 
-      margin-right: 12px; 
-      accent-color: #d4af37; 
+      margin-right: 15px; 
+      accent-color: #C3A461; /* ゴールド */
       transform: scale(1.3); 
     }
     
     .label-text { 
-      font-size: 13px; 
-      color: #999; 
-      font-weight: bold; 
-      margin-bottom: 8px; 
+      font-size: 14px; 
+      color: #7f8c8d; 
+      font-weight: 500; 
+      margin-bottom: 10px; 
       display: block; 
     }
     
     input[type="text"], input[type="number"] { 
       font-size: 18px; 
-      padding: 15px; 
-      width: 100%; 
-      margin-bottom: 25px; 
-      box-sizing: border-box; 
-      border: 2px solid #f0f0f0; 
-      border-radius: 12px; 
-    }
-    
-    button { 
-      font-size: 17px; 
-      font-weight: bold; 
       padding: 18px; 
       width: 100%; 
-      cursor: pointer; 
-      background: linear-gradient(135deg, #eecb67 0%, #d4af37 100%); 
-      color: #fff; 
-      border: none; 
-      border-radius: 50px; 
-      box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3);
-      margin-top: 10px;
+      margin-bottom: 30px; 
+      box-sizing: border-box; 
+      border: 1px solid #e1e8ed; 
+      border-radius: 8px; 
+      background: #fdfdfd; 
+      font-family: sans-serif; /* 入力文字はゴシックで読みやすく */
     }
+    input:focus {
+      outline: none;
+      border-color: #C3A461;
+    }
+    
+    /* ボタン：深紺の背景にゴールドの文字。これが最も品格が出る。 */
+    button { 
+      font-size: 18px; 
+      font-weight: 700; 
+      padding: 20px; 
+      width: 100%; 
+      cursor: pointer; 
+      background-color: #1A253A; /* 深いネイビー */
+      color: #C3A461; /* ゴールドの文字 */
+      border: 1px solid #1A253A; 
+      border-radius: 8px; 
+      transition: 0.3s; 
+      box-shadow: 0 5px 15px rgba(26, 37, 58, 0.2);
+      letter-spacing: 0.1em;
+    }
+    button:active { transform: scale(0.98); box-shadow: 0 2px 5px rgba(26, 37, 58, 0.2); }
 
+    /* 結果表示：凛としたたたずまいに */
     #resultArea { 
       display: none; 
-      margin-top: 20px; 
-      padding: 25px; 
-      background: #fff; 
-      border-radius: 16px; 
-      border: 1px solid #f0f0f0;
+      margin-top: 25px; 
+      padding: 30px; 
+      background: #fbfbfb; 
+      border-radius: 8px; 
+      border: 1px solid #e1e8ed;
     }
     #resTxt { 
       white-space: pre-wrap; 
-      font-size: 15px; 
-      color: #333; 
-      line-height: 1.8; 
+      font-size: 16px; 
+      color: #1A253A; 
+      line-height: 2; 
     }
   </style>
 </head>
@@ -105,19 +123,13 @@
     
     <div id="inputForm">
       <span class="label-text">受け取り方法</span>
-      <label class="radio-label">
-        <input type="radio" name="type" value="list" checked>
-        <span>キーワード一覧（全9数）</span>
-      </label>
-      <label class="radio-label">
-        <input type="radio" name="type" value="report">
-        <span>解説メッセージ（主要3数）</span>
-      </label>
+      <label class="radio-label"><input type="radio" name="type" value="list" checked><span>キーワード一覧（全9数）</span></label>
+      <label class="radio-label"><input type="radio" name="type" value="report"><span>解説メッセージ（主要3数）</span></label>
       
       <span class="label-text">お名前</span>
       <input id="name" type="text" placeholder="例：花子">
       
-      <span class="label-text">生年月日（半角数字8桁）</span>
+      <span class="label-text">生年月日（8桁）</span>
       <input id="birth" type="number" placeholder="例：19900101">
       
       <button id="sendBtn" onclick="send()">診断結果を見る</button>
@@ -125,7 +137,7 @@
 
     <div id="resultArea">
       <div id="resTxt"></div>
-      <button onclick="liff.closeWindow()" style="margin-top:30px; background:#f0f0f0; color:#888; box-shadow:none;">閉じる</button>
+      <button onclick="liff.closeWindow()" style="margin-top:35px; background:#e1e8ed; color:#7f8c8d; box-shadow:none; border:none;">閉じる</button>
     </div>
   </div>
 
@@ -144,10 +156,7 @@
       const birth = document.getElementById("birth").value;
       const type = document.querySelector('input[name="type"]:checked').value;
       
-      if (!name || birth.length !== 8) { 
-        alert("お名前と生年月日（8桁）を正しく入力してください。"); 
-        return; 
-      }
+      if (!name || birth.length !== 8) { alert("入力を確認してください"); return; }
       
       btn.disabled = true; btn.innerText = "計算中...";
 
@@ -160,7 +169,7 @@
         
         if (type === "list") {
           document.getElementById("inputForm").style.display = "none";
-          document.getElementById("resTxt").innerText = json.report; 
+          document.getElementById("resTxt").innerText = json.report; // Undefined対策
           document.getElementById("resultArea").style.display = "block";
         } else {
           alert("LINEへ診断結果を送りました！トーク画面を確認してください。");
