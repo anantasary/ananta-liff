@@ -38,35 +38,50 @@
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
     <script>
+      const GAS_URL = "https://script.google.com/macros/s/AKfycbyPDfV-FglJeK_8tdPoQ8BN6B0elN-1m5lLhpf3beH4oudwtRL67O77TeC3SW7adB0/exec";
       let userId = "";
 
       async function main() {
-        await liff.init({ liffId: "2009800795-TjgaXLF7" });
+        try {
+          await liff.init({ liffId: "2009800795-TjgaXLF7" });
 
-        if (!liff.isLoggedIn()) {
-          liff.login();
-          return;
+          if (!liff.isLoggedIn()) {
+            liff.login();
+            return;
+          }
+
+          const profile = await liff.getProfile();
+          userId = profile.userId;
+
+        } catch (e) {
+          alert("LIFF初期化エラー");
+          console.log(e);
         }
-
-        const profile = await liff.getProfile();
-        userId = profile.userId;
       }
 
       async function send() {
-        await fetch("https://script.google.com/macros/s/AKfycbyPDfV-FglJeK_8tdPoQ8BN6B0elN-1m5lLhpf3beH4oudwtRL67O77TeC3SW7adB0/exec", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
+        try {
+          const payload = {
             userId: userId,
             name: document.getElementById("name").value,
             birth: document.getElementById("birth").value
-          })
-        });
+          };
 
-        alert("送信完了");
-        liff.closeWindow();
+          await fetch(GAS_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+          });
+
+          alert("送信完了");
+          liff.closeWindow();
+
+        } catch (e) {
+          alert("送信エラー");
+          console.log(e);
+        }
       }
 
       main();
