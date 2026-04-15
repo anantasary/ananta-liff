@@ -5,199 +5,99 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ヨガ数秘学 診断入力</title>
   <style>
-    body { 
-      font-size: 18px; 
-      padding: 40px 25px; 
-      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif; 
-      background-color: #fff; 
-      color: #333; /* 全体的に文字色を濃く */
-      line-height: 1.6; 
-    }
-
-    /* 選択エリア：枠線を少し強調 */
-    .option-group { 
-      margin-bottom: 40px; 
-      padding: 20px; 
-      background: #fff; 
-      border-radius: 12px; 
-      border: 1.5px solid #f5e6e8; /* 桜色を少し濃く */
-    }
+    body { font-size: 18px; padding: 40px 25px; font-family: sans-serif; background-color: #fff; color: #333; line-height: 1.6; }
+    .option-group { margin-bottom: 40px; padding: 20px; background: #fff; border-radius: 12px; border: 1.5px solid #f5e6e8; }
+    .option-title { display: block; margin-bottom: 15px; font-weight: bold; font-size: 13px; color: #b58d94; text-align: center; letter-spacing: 0.15em; }
+    .radio-label { display: block; margin-bottom: 12px; cursor: pointer; padding: 15px; font-size: 16px; font-weight: 500; border: 1px solid #ddd; border-radius: 8px; }
+    .input-label { font-size: 14px; color: #444; font-weight: bold; letter-spacing: 0.12em; display: block; margin-bottom: 10px; }
+    input[type="text"], input[type="number"] { font-size: 18px; padding: 12px 5px; width: 100%; margin-bottom: 30px; box-sizing: border-box; border: none; border-bottom: 2px solid #eee; background-color: transparent; }
+    button { font-size: 16px; font-weight: bold; letter-spacing: 0.2em; padding: 18px; width: 100%; cursor: pointer; background-color: transparent; color: #ffc1cc; border: 2px solid #ffc1cc; border-radius: 40px; margin-top: 30px; }
     
-    .option-title { 
-      display: block; 
-      margin-bottom: 15px; 
-      font-weight: bold;      /* 太字にしてハッキリ */
-      font-size: 13px;     
-      color: #b58d94;         /* 色味を持たせつつ濃く */
-      text-align: center;
-      letter-spacing: 0.15em;
-    }
-
-    .radio-label { 
-      display: block; 
-      margin-bottom: 12px; 
-      cursor: pointer; 
-      padding: 15px; 
-      font-size: 16px;    
-      font-weight: 500;       /* 文字の存在感を出す */
-      background: #fff;
-      border: 1px solid #ddd; /* 枠線をハッキリ */
-      border-radius: 8px;
-      transition: all 0.2s;
-    }
-    
-    /* チェックされた時のスタイル */
-    input[type="radio"]:checked + span {
-      font-weight: bold;
-    }
-    
-    input[type="radio"] {
-      accent-color: #ffc1cc;
-      margin-right: 12px;
-      transform: scale(1.2);
-    }
-
-    /* 入力セクションの見出し：ここをハッキリさせた */
-    .input-label {
-      font-size: 14px;
-      color: #444;           /* 濃いグレーに変更 */
-      font-weight: bold;      /* 太字に変更 */
-      letter-spacing: 0.12em;
-      display: block;
-      margin-bottom: 10px;
-      margin-left: 2px;
-    }
-
-    input[type="text"], input[type="number"] { 
-      font-size: 18px; 
-      padding: 12px 5px; 
-      width: 100%; 
-      margin-bottom: 30px; 
-      box-sizing: border-box; 
-      border: none;
-      border-bottom: 2px solid #eee; /* 下線を少し太く */
-      background-color: transparent;
-      border-radius: 0;
-      transition: border-color 0.3s;
-    }
-    
-    /* プレースホルダー（お名前 など）は薄いまま維持 */
-    input::placeholder {
-      color: #ccc;
-      font-weight: normal;
-    }
-
-    input[type="text"]:focus, input[type="number"]:focus {
-      outline: none;
-      border-bottom-color: #ffc1cc;
-    }
-
-    /* ボタン：枠線を少し太くして「締まり」を出した */
-    button { 
-      font-size: 16px; 
-      font-weight: bold; 
-      letter-spacing: 0.2em;
-      padding: 18px; 
-      width: 100%; 
-      cursor: pointer; 
-      background-color: transparent; 
-      color: #ffc1cc; 
-      border: 2px solid #ffc1cc; /* 枠線を太く */
-      border-radius: 40px; 
-      margin-top: 30px; 
-      transition: all 0.3s;
-    }
-    
-    button:hover {
-      background-color: #ffc1cc; 
-      color: white; 
-    }
-
-    button:disabled { 
-      color: #eee;
-      border-color: #eee;
-      cursor: not-allowed;
-    }
+    /* 【追加】結果表示エリアのスタイル */
+    #resultArea { display: none; margin-top: 20px; padding: 20px; background: #fafafa; border-radius: 15px; border: 1px solid #eee; }
+    .result-item { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 8px 0; font-size: 15px; }
+    .result-pos { color: #888; }
+    .result-val { font-weight: bold; color: #b58d94; }
   </style>
 </head>
 <body>
 
-  <div class="option-group">
-    <span class="option-title">RECEIVE OPTION</span>
-    <label class="radio-label">
-      <input type="radio" name="type" value="list" checked> <span>キーワード一覧（全9数）</span>
-    </label>
-    <label class="radio-label">
-      <input type="radio" name="type" value="report"> <span>解説メッセージ（主要3数）</span>
-    </label>
+  <div id="inputForm">
+    <div class="option-group">
+      <span class="option-title">RECEIVE OPTION</span>
+      <label class="radio-label"><input type="radio" name="type" value="list" checked> キーワード一覧（ウェブで見る）</label>
+      <label class="radio-label"><input type="radio" name="type" value="report"> 解説メッセージ（LINEに送る）</label>
+    </div>
+
+    <span class="input-label">YOUR NAME</span>
+    <input id="name" type="text" placeholder="お名前">
+    <span class="input-label">BIRTHDAY</span>
+    <input id="birth" type="number" placeholder="19900101">
+
+    <button id="sendBtn" onclick="send()">RESULT</button>
   </div>
 
-  <span class="input-label">YOUR NAME</span>
-  <input id="name" type="text" placeholder="お名前（ニックネーム可）">
-
-  <span class="input-label">BIRTHDAY</span>
-  <input id="birth" type="number" placeholder="19900101">
-
-  <button id="sendBtn" onclick="send()">RESULT</button>
+  <div id="resultArea">
+    <div id="resultContent"></div>
+    <button onclick="liff.closeWindow()" style="margin-top:20px; border-color:#ccc; color:#888;">閉じる</button>
+  </div>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwYkJz_KO8fHsFcXj6GdC4Zo1hWwjbgU2Opcm6DWh0p1g8dalbKKof_zFe6lp6D9oU/exec";
-    let userId = "";
-
+    
     async function main() {
-      try {
-        await liff.init({ liffId: "2009800795-TjgaXLF7" });
-        if (!liff.isLoggedIn()) {
-          liff.login();
-        } else {
-          const profile = await liff.getProfile();
-          userId = profile.userId;
-        }
-      } catch (e) {
-        console.error("LIFF初期化エラー", e);
-      }
+      await liff.init({ liffId: "2009800795-TjgaXLF7" });
+      if (!liff.isLoggedIn()) liff.login();
+    }
+
+    // 数字を計算するロジック（ウェブ表示用）
+    function calculate(birth) {
+      const reduce = (n) => {
+        n = Number(n);
+        while (n > 11) n = String(n).split('').reduce((a, b) => Number(a) + Number(b), 0);
+        return n;
+      };
+      const sumAll = (s) => s.split('').reduce((a, b) => a + Number(b), 0);
+      
+      return {
+        "ソウル": reduce(birth.substring(6, 8)),
+        "レッスン": reduce(birth.substring(4, 6)),
+        "ファンデーション": reduce(Number(birth.substring(4, 6)) + Number(birth.substring(6, 8))),
+        "ギフト": reduce(birth.substring(2, 4)),
+        "パスト": reduce(birth.substring(0, 4)),
+        "アセット": reduce(reduce(birth.substring(2, 4)) + reduce(birth.substring(0, 4))),
+        "プロジェクション": reduce(sumAll(birth)),
+        "コア": reduce(reduce(birth.substring(4, 6)) + reduce(sumAll(birth))),
+        "パーパス": reduce(sumAll(birth))
+      };
     }
 
     async function send() {
-      const btn = document.getElementById("sendBtn");
       const name = document.getElementById("name").value;
       const birth = document.getElementById("birth").value;
       const type = document.querySelector('input[name="type"]:checked').value;
 
-      if (!name || !birth) {
-        alert("名前と生年月日を入力してください");
-        return;
-      }
+      if (!name || birth.length !== 8) { alert("正しく入力してください"); return; }
 
-      btn.disabled = true;
-      btn.innerText = "SENDING...";
+      // 1. スプシ保存とLINE送信のためにGASへデータは飛ばす
+      fetch(GAS_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ name, birth, type, userId: liff.getContext()?.userId }) });
 
-      const payload = {
-        userId: userId,
-        name: name,
-        birth: birth,
-        type: type 
-      };
-
-      try {
-        await fetch(GAS_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        alert("送信完了！LINEをご確認ください。");
+      // 2. 「一覧」なら画面を書き換えて終了
+      if (type === "list") {
+        const nums = calculate(birth);
+        let html = `<div style="text-align:center; font-weight:bold; margin-bottom:20px;">${name}さんの診断結果</div>`;
+        for (let key in nums) {
+          html += `<div class="result-item"><span class="result-pos">${key}</span><span class="result-val">${nums[key]}</span></div>`;
+        }
+        document.getElementById("inputForm").style.display = "none";
+        document.getElementById("resultContent").innerHTML = html;
+        document.getElementById("resultArea").style.display = "block";
+      } else {
+        alert("LINEへ解説を送信しました！");
         liff.closeWindow();
-      } catch (e) {
-        alert("送信に失敗しました。");
-      } finally {
-        btn.disabled = false;
-        btn.innerText = "RESULT";
       }
     }
-
     main();
   </script>
 </body>
