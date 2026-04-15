@@ -5,8 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ヨガ数秘学 診断入力</title>
   <style>
-    body { font-size: 20px; padding: 20px; font-family: sans-serif; }
-    input { font-size: 20px; padding: 10px; width: 100%; margin-bottom: 15px; box-sizing: border-box; }
+    body { font-size: 20px; padding: 20px; font-family: sans-serif; background-color: #f9f9f9; }
+    input[type="text"], input[type="number"] { font-size: 20px; padding: 10px; width: 100%; margin-bottom: 15px; box-sizing: border-box; }
+    .option-group { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 8px; border: 1px solid #ddd; }
+    .option-group label { display: block; margin-bottom: 10px; font-weight: bold; }
+    .radio-label { display: inline-block; margin-right: 20px; cursor: pointer; }
     button { font-size: 20px; padding: 12px; width: 100%; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px; }
     button:disabled { background-color: #ccc; }
   </style>
@@ -19,11 +22,20 @@
   生年月日（西暦8桁）<br>
   <input id="birth" type="number" placeholder="19900101">
 
+  <div class="option-group">
+    <label>受け取り形式を選択してください</label>
+    <label class="radio-label">
+      <input type="radio" name="type" value="report" checked> 詳しいレポート
+    </label>
+    <label class="radio-label">
+      <input type="radio" name="type" value="list"> キーワード一覧のみ
+    </label>
+  </div>
+
   <button id="sendBtn" onclick="send()">送信</button>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
-    // 先ほど発行された最新のGAS URLを反映済みです
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwYkJz_KO8fHsFcXj6GdC4Zo1hWwjbgU2Opcm6DWh0p1g8dalbKKof_zFe6lp6D9oU/exec";
     let userId = "";
 
@@ -46,6 +58,9 @@
       const btn = document.getElementById("sendBtn");
       const name = document.getElementById("name").value;
       const birth = document.getElementById("birth").value;
+      
+      // 【追加】ラジオボタンでどちらが選ばれているか取得
+      const type = document.querySelector('input[name="type"]:checked').value;
 
       if (!name || !birth) {
         alert("名前と生年月日を入力してください");
@@ -58,11 +73,11 @@
       const payload = {
         userId: userId,
         name: name,
-        birth: birth
+        birth: birth,
+        type: type // 【追加】GAS側に形式（report か list）を伝える
       };
 
       try {
-        // GASへの送信（no-corsモードでCORSエラーを回避）
         await fetch(GAS_URL, {
           method: "POST",
           mode: "no-cors",
@@ -70,11 +85,11 @@
           body: JSON.stringify(payload)
         });
 
-        alert("送信が完了しました！");
+        alert("送信が完了しました！LINEを確認してください。");
         liff.closeWindow();
       } catch (e) {
         console.error("送信エラー", e);
-        alert("送信に失敗しました。ネット環境を確認してください。");
+        alert("送信に失敗しました。");
       } finally {
         btn.disabled = false;
         btn.innerText = "送信";
