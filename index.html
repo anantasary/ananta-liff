@@ -5,13 +5,78 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ヨガ数秘学 診断入力</title>
   <style>
-    body { font-size: 20px; padding: 20px; font-family: sans-serif; background-color: #f9f9f9; }
-    input[type="text"], input[type="number"] { font-size: 20px; padding: 10px; width: 100%; margin-bottom: 15px; box-sizing: border-box; }
-    .option-group { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 8px; border: 1px solid #ddd; }
-    .option-group label { display: block; margin-bottom: 10px; font-weight: bold; }
-    .radio-label { display: inline-block; margin-right: 20px; cursor: pointer; }
-    button { font-size: 20px; padding: 12px; width: 100%; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px; }
-    button:disabled { background-color: #ccc; }
+    /* 全体の設定 */
+    body { font-size: 20px; padding: 20px; font-family: sans-serif; background-color: #fcf8f8; color: #333; }
+    input[type="text"], input[type="number"] { font-size: 20px; padding: 10px; width: 100%; margin-bottom: 15px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
+    
+    /* 選択エリアの枠 */
+    .option-group { 
+      margin-bottom: 20px; 
+      padding: 15px; 
+      background: #fff; 
+      border-radius: 8px; 
+      border: 1px solid #eee; 
+    }
+    
+    /* 「お届け内容を選択してください」の文字：細く小さく */
+    .option-title { 
+      display: block; 
+      margin-bottom: 12px; 
+      font-weight: normal; 
+      font-size: 16px;     
+      color: #888;        
+    }
+
+    /* ラジオボタンの選択肢 */
+    .radio-label { 
+      display: block; 
+      margin-bottom: 10px; 
+      cursor: pointer; 
+      padding: 5px; 
+      font-size: 18px;    
+    }
+    
+    /* ラジオボタン自体の色（アクセントカラー）も少しピンクに */
+    input[type="radio"] {
+      accent-color: #e6b8af;
+    }
+
+    /* --- ここから修正：ボタンの色 --- */
+    button { 
+      font-size: 20px; 
+      padding: 12px; 
+      width: 100%; 
+      cursor: pointer; 
+      
+      /* 桜のようなピンクベージュ (#e6b8af) */
+      background-color: #e6b8af; 
+      color: white; 
+      
+      border: none; 
+      border-radius: 5px; 
+      margin-top: 10px; 
+      
+      /* 影を少しつけて上品に */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      
+      /* なめらかな色変化 */
+      transition: background-color 0.3s;
+    }
+    
+    /* ボタンを押した（ホバーした）時の色：少し濃く */
+    button:hover {
+      background-color: #d8a89f;
+    }
+
+    /* 送信中など、無効な時の色：薄いグレーベージュ */
+    button:disabled { 
+      background-color: #e0dbda; 
+      color: #888;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+    /* --- ここまで修正 --- */
+
   </style>
 </head>
 <body>
@@ -23,16 +88,16 @@
   <input id="birth" type="number" placeholder="19900101">
 
   <div class="option-group">
-    <label>受け取り形式を選択してください</label>
+    <span class="option-title">お届け内容を選択してください</span>
     <label class="radio-label">
-      <input type="radio" name="type" value="report" checked> あなたへのヨガ数秘学メッセージ
+      <input type="radio" name="type" value="report" checked> 解説メッセージ（主要3数）
     </label>
     <label class="radio-label">
-      <input type="radio" name="type" value="list"> あなたの9つの数字一覧
+      <input type="radio" name="type" value="list"> キーワード一覧（全9数）
     </label>
   </div>
 
-  <button id="sendBtn" onclick="send()">送信</button>
+  <button id="sendBtn" onclick="send()">診断結果を受け取る</button>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
@@ -50,7 +115,7 @@
         }
       } catch (e) {
         console.error("LIFF初期化エラー", e);
-        alert("初期化に失敗しました。LINEアプリ内で開いてください。");
+        alert("初期化に失敗しました。");
       }
     }
 
@@ -58,8 +123,6 @@
       const btn = document.getElementById("sendBtn");
       const name = document.getElementById("name").value;
       const birth = document.getElementById("birth").value;
-      
-      // 【追加】ラジオボタンでどちらが選ばれているか取得
       const type = document.querySelector('input[name="type"]:checked').value;
 
       if (!name || !birth) {
@@ -74,10 +137,11 @@
         userId: userId,
         name: name,
         birth: birth,
-        type: type // 【追加】GAS側に形式（report か list）を伝える
+        type: type 
       };
 
       try {
+        // GASへの送信
         await fetch(GAS_URL, {
           method: "POST",
           mode: "no-cors",
@@ -85,14 +149,14 @@
           body: JSON.stringify(payload)
         });
 
-        alert("送信が完了しました！LINEを確認してください。");
+        alert("送信完了！LINEをご確認ください。");
         liff.closeWindow();
       } catch (e) {
         console.error("送信エラー", e);
         alert("送信に失敗しました。");
       } finally {
         btn.disabled = false;
-        btn.innerText = "送信";
+        btn.innerText = "診断結果を受け取る";
       }
     }
 
