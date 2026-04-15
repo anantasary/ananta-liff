@@ -42,21 +42,15 @@
       let userId = "";
 
       async function main() {
-        try {
-          await liff.init({ liffId: "2009800795-TjgaXLF7" });
+        await liff.init({ liffId: "2009800795-TjgaXLF7" });
 
-          if (!liff.isLoggedIn()) {
-            liff.login();
-            return;
-          }
-
-          const profile = await liff.getProfile();
-          userId = profile.userId;
-
-        } catch (e) {
-          alert("LIFF初期化エラー");
-          console.log(e);
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
         }
+
+        const profile = await liff.getProfile();
+        userId = profile.userId;
       }
 
       async function send() {
@@ -69,9 +63,6 @@
 
           await fetch(GAS_URL, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
             body: JSON.stringify(payload)
           });
 
