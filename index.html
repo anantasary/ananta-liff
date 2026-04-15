@@ -5,18 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yoga Numerology</title>
   <style>
-    /* 軽やかで透明感のあるデザイン */
-    body { font-size: 16px; padding: 40px 20px; font-family: sans-serif; background-color: #fcfdfd; color: #444; line-height: 1.6; }
+    body { font-size: 16px; padding: 40px 20px; font-family: sans-serif; background-color: #fcfdfd; color: #444; }
     .container { max-width: 400px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
     h2 { font-size: 14px; text-align: center; color: #b89c7d; letter-spacing: 0.2em; margin-bottom: 30px; }
     .radio-label { display: flex; align-items: center; margin-bottom: 12px; padding: 15px; background: #f8fafb; border-radius: 12px; cursor: pointer; font-weight: bold; }
     input[type="radio"] { margin-right: 10px; accent-color: #b89c7d; }
     .label-text { font-size: 12px; color: #888; font-weight: bold; margin-bottom: 5px; display: block; }
-    input[type="text"], input[type="number"] { font-size: 18px; padding: 12px; width: 100%; margin-bottom: 25px; box-sizing: border-box; border: 1px solid #eee; border-radius: 8px; background: #fdfdfd; }
-    /* ボタンをスマートに */
-    button { font-size: 15px; font-weight: bold; letter-spacing: 0.1em; padding: 16px; width: 100%; cursor: pointer; background: #b89c7d; color: #fff; border: none; border-radius: 30px; transition: 0.3s; }
-    button:disabled { background: #ccc; }
-    #resultArea { display: none; margin-top: 20px; padding: 20px; border-top: 2px solid #f8fafb; white-space: pre-wrap; font-size: 15px; color: #555; }
+    input[type="text"], input[type="number"] { font-size: 18px; padding: 12px; width: 100%; margin-bottom: 25px; box-sizing: border-box; border: 1px solid #eee; border-radius: 8px; }
+    button { font-size: 15px; font-weight: bold; padding: 16px; width: 100%; cursor: pointer; background: #b89c7d; color: #fff; border: none; border-radius: 30px; }
+    #resultArea { display: none; margin-top: 20px; padding: 20px; border-top: 2px solid #f8fafb; white-space: pre-wrap; font-size: 15px; }
   </style>
 </head>
 <body>
@@ -24,14 +21,13 @@
     <h2>YOGA NUMEROLOGY</h2>
     <div id="inputForm">
       <span class="label-text">RECEIVE OPTION</span>
-      <label class="radio-label"><input type="radio" name="type" value="list" checked> <span>全9数一覧を見る</span></label>
-      <label class="radio-label"><input type="radio" name="type" value="report"> <span>主要3数の解説をLINEで送る</span></label>
-      
+      <label class="radio-label"><input type="radio" name="type" value="list" checked><span>全9数一覧を見る</span></label>
+      <label class="radio-label"><input type="radio" name="type" value="report"><span>解説をLINEで受け取る</span></label>
       <span class="label-text">YOUR NAME</span>
       <input id="name" type="text" placeholder="お名前">
       <span class="label-text">BIRTHDAY (8 digits)</span>
       <input id="birth" type="number" placeholder="19900101">
-      <button id="sendBtn" onclick="send()">診断する</button>
+      <button id="sendBtn" onclick="send()">診断結果を表示</button>
     </div>
     <div id="resultArea">
       <div id="resTxt"></div>
@@ -41,28 +37,33 @@
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
+    // ★ここを新しくデプロイしたURLに差し替え！
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwYkJz_KO8fHsFcXj6GdC4Zo1hWwjbgU2Opcm6DWh0p1g8dalbKKof_zFe6lp6D9oU/exec";
+
     async function main() { await liff.init({ liffId: "2009800795-TjgaXLF7" }); if (!liff.isLoggedIn()) liff.login(); }
     
     async function send() {
-      const btn = document.getElementById("sendBtn");
       const name = document.getElementById("name").value;
       const birth = document.getElementById("birth").value;
       const type = document.querySelector('input[name="type"]:checked').value;
       if (!name || birth.length !== 8) { alert("入力を確認してください"); return; }
       
-      btn.disabled = true; btn.innerText = "計算中...";
+      document.getElementById("sendBtn").disabled = true;
+      document.getElementById("sendBtn").innerText = "計算中...";
+
       try {
         const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ name, birth, type, userId: liff.getContext()?.userId }) });
         const json = await res.json();
+        
         if (type === "list") {
           document.getElementById("inputForm").style.display = "none";
-          document.getElementById("resTxt").innerText = json.report; // ここでUndefinedを防ぐ
+          document.getElementById("resTxt").innerText = json.report; // 9つ全部表示される
           document.getElementById("resultArea").style.display = "block";
         } else {
-          alert("LINEに解説を送りました！"); liff.closeWindow();
+          alert("LINEに解説を送りました！");
+          liff.closeWindow();
         }
-      } catch (e) { alert("通信エラー"); } finally { btn.disabled = false; btn.innerText = "診断する"; }
+      } catch (e) { alert("通信エラーが発生しました。GASのURLが正しいか確認してください。"); }
     }
     main();
   </script>
