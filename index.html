@@ -5,99 +5,124 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ヨガ数秘学 診断入力</title>
   <style>
-    /* 全体の設定 */
-    body { font-size: 20px; padding: 20px; font-family: sans-serif; background-color: #fcf8f8; color: #333; }
-    input[type="text"], input[type="number"] { font-size: 20px; padding: 10px; width: 100%; margin-bottom: 15px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
-    
-    /* 選択エリアの枠 */
-    .option-group { 
-      margin-bottom: 20px; 
-      padding: 15px; 
-      background: #fff; 
-      border-radius: 8px; 
-      border: 1px solid #eee; 
-    }
-    
-    /* 「お届け内容を選択してください」の文字：細く小さく */
-    .option-title { 
-      display: block; 
-      margin-bottom: 12px; 
-      font-weight: normal; 
-      font-size: 16px;     
-      color: #888;        
+    body { 
+      font-size: 18px; 
+      padding: 30px 20px; 
+      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif; 
+      background-color: #fff; 
+      color: #555; 
+      line-height: 1.6; 
     }
 
-    /* ラジオボタンの選択肢 */
+    /* 選択エリアを一番上に配置 */
+    .option-group { 
+      margin-bottom: 35px; 
+      padding: 20px; 
+      background: #fffafb; 
+      border-radius: 12px; 
+      border: 1px solid #ffeff1; 
+    }
+    
+    .option-title { 
+      display: block; 
+      margin-bottom: 15px; 
+      font-weight: normal; 
+      font-size: 14px;     
+      color: #b58d94; 
+      text-align: center;
+      letter-spacing: 0.05em;
+    }
+
     .radio-label { 
       display: block; 
       margin-bottom: 10px; 
       cursor: pointer; 
-      padding: 5px; 
-      font-size: 18px;    
+      padding: 12px; 
+      font-size: 16px;    
+      background: #fff;
+      border: 1px solid #f0f0f0;
+      border-radius: 8px;
+      transition: all 0.2s;
     }
     
-    /* ラジオボタン自体の色（アクセントカラー）も少しピンクに */
     input[type="radio"] {
-      accent-color: #e6b8af;
+      accent-color: #ffc1cc;
+      margin-right: 10px;
     }
 
-    /* --- ここから修正：ボタンの色 --- */
+    /* 入力セクション */
+    .input-label {
+      font-size: 13px;
+      color: #aaa;
+      letter-spacing: 0.1em;
+      display: block;
+      margin-bottom: 8px;
+      margin-left: 5px;
+    }
+
+    input[type="text"], input[type="number"] { 
+      font-size: 18px; 
+      padding: 15px; 
+      width: 100%; 
+      margin-bottom: 20px; 
+      box-sizing: border-box; 
+      border: none;
+      border-bottom: 1px solid #eee; 
+      background-color: transparent;
+      border-radius: 0;
+      transition: border-color 0.3s;
+    }
+    input[type="text"]:focus, input[type="number"]:focus {
+      outline: none;
+      border-bottom-color: #ffc1cc;
+    }
+
     button { 
-      font-size: 20px; 
-      padding: 12px; 
+      font-size: 17px; 
+      font-weight: 600; 
+      letter-spacing: 0.1em;
+      padding: 16px; 
       width: 100%; 
       cursor: pointer; 
-      
-      /* 桜のようなピンクベージュ (#e6b8af) */
-      background-color: #e6b8af; 
-      color: white; 
-      
-      border: none; 
-      border-radius: 5px; 
-      margin-top: 10px; 
-      
-      /* 影を少しつけて上品に */
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      
-      /* なめらかな色変化 */
-      transition: background-color 0.3s;
+      background-color: transparent; 
+      color: #ffc1cc; 
+      border: 1px solid #ffc1cc; 
+      border-radius: 30px; 
+      margin-top: 25px; 
+      transition: all 0.3s;
     }
     
-    /* ボタンを押した（ホバーした）時の色：少し濃く */
     button:hover {
-      background-color: #d8a89f;
+      background-color: #ffc1cc; 
+      color: white; 
     }
 
-    /* 送信中など、無効な時の色：薄いグレーベージュ */
     button:disabled { 
-      background-color: #e0dbda; 
-      color: #888;
-      box-shadow: none;
+      color: #ddd;
+      border-color: #ddd;
       cursor: not-allowed;
     }
-    /* --- ここまで修正 --- */
-
   </style>
 </head>
 <body>
 
-  名前（ニックネームOK）<br>
-  <input id="name" type="text" placeholder="お名前">
-
-  生年月日（西暦8桁）<br>
-  <input id="birth" type="number" placeholder="19900101">
-
   <div class="option-group">
-    <span class="option-title">お届け内容を選択してください</span>
+    <span class="option-title">RECEIVE OPTION</span>
     <label class="radio-label">
-      <input type="radio" name="type" value="report" checked> 解説メッセージ（主要3数）
+      <input type="radio" name="type" value="list" checked> キーワード一覧（全9数）
     </label>
     <label class="radio-label">
-      <input type="radio" name="type" value="list"> キーワード一覧（全9数）
+      <input type="radio" name="type" value="report"> 解説メッセージ（主要3数）
     </label>
   </div>
 
-  <button id="sendBtn" onclick="send()">診断結果を受け取る</button>
+  <span class="input-label">YOUR NAME</span>
+  <input id="name" type="text" placeholder="お名前（ニックネーム可）">
+
+  <span class="input-label">BIRTHDAY</span>
+  <input id="birth" type="number" placeholder="19900101">
+
+  <button id="sendBtn" onclick="send()">RESULT</button>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
@@ -115,7 +140,6 @@
         }
       } catch (e) {
         console.error("LIFF初期化エラー", e);
-        alert("初期化に失敗しました。");
       }
     }
 
@@ -131,7 +155,7 @@
       }
 
       btn.disabled = true;
-      btn.innerText = "送信中...";
+      btn.innerText = "SENDING...";
 
       const payload = {
         userId: userId,
@@ -141,7 +165,6 @@
       };
 
       try {
-        // GASへの送信
         await fetch(GAS_URL, {
           method: "POST",
           mode: "no-cors",
@@ -152,11 +175,10 @@
         alert("送信完了！LINEをご確認ください。");
         liff.closeWindow();
       } catch (e) {
-        console.error("送信エラー", e);
         alert("送信に失敗しました。");
       } finally {
         btn.disabled = false;
-        btn.innerText = "診断結果を受け取る";
+        btn.innerText = "RESULT";
       }
     }
 
