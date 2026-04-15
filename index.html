@@ -5,90 +5,91 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ヨガ数秘学 診断</title>
   <style>
-    /* 「黄色」や「黒」を排除し、明るく輝きのある配色に */
+    /* くすみを一切排除した、清涼感のあるモダンデザイン */
     body { 
       font-size: 16px; 
       padding: 40px 20px; 
       font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif; 
-      background-color: #f9fbff; /* 非常に明るい爽やかな背景 */
-      color: #4a4a4a; 
+      background-color: #f0f5f9; /* 澄んだ空気のような薄いブルーグレー */
+      color: #334155; 
     }
     .container { 
       max-width: 400px; 
       margin: 0 auto; 
       background: #ffffff; 
       padding: 35px 25px; 
-      border-radius: 24px; 
-      box-shadow: 0 12px 40px rgba(184, 156, 125, 0.15); 
+      border-radius: 20px; 
+      box-shadow: 0 10px 25px rgba(148, 163, 184, 0.1); 
     }
     
     h2 { 
-      font-size: 20px; 
+      font-size: 18px; 
       text-align: center; 
-      color: #c9a063; /* 輝きのあるシャンパンゴールド */
+      color: #3b82f6; /* 清潔感のあるブルー */
       margin-bottom: 30px; 
       font-weight: bold;
+      letter-spacing: 0.05em;
     }
     
-    /* 選択肢：明るく清潔感のあるスタイル */
+    /* 選択肢：スッキリと見やすく */
     .radio-label { 
       display: flex; 
       align-items: center; 
       margin-bottom: 12px; 
       padding: 18px; 
-      background: #fff; 
-      border: 2px solid #f2f2f2; 
-      border-radius: 16px; 
+      background: #f8fafc; 
+      border: 1px solid #e2e8f0; 
+      border-radius: 12px; 
       cursor: pointer; 
       font-weight: bold; 
       transition: 0.2s;
     }
     .radio-label:has(input:checked) {
-      border-color: #c9a063;
-      background: #fffdf9;
+      border-color: #3b82f6;
+      background: #eff6ff;
     }
     input[type="radio"] { 
       margin-right: 12px; 
-      accent-color: #c9a063; 
-      transform: scale(1.3); 
+      accent-color: #3b82f6; 
+      transform: scale(1.2); 
     }
     
     .label-text { 
-      font-size: 13px; 
-      color: #a0a0a0; 
+      font-size: 12px; 
+      color: #94a3b8; 
       font-weight: bold; 
-      margin-bottom: 8px; 
+      margin-bottom: 6px; 
       display: block; 
     }
     
     input[type="text"], input[type="number"] { 
       font-size: 18px; 
-      padding: 15px; 
+      padding: 14px; 
       width: 100%; 
       margin-bottom: 25px; 
       box-sizing: border-box; 
-      border: 2px solid #f2f2f2; 
-      border-radius: 12px; 
-      background: #fdfdfd; 
+      border: 1px solid #e2e8f0; 
+      border-radius: 10px; 
+      background: #fff; 
     }
     input:focus {
       outline: none;
-      border-color: #c9a063;
+      border-color: #3b82f6;
     }
     
-    /* ボタン：透明感のあるシャンパンゴールド */
+    /* ボタン：透明感のある鮮やかなブルー */
     button { 
-      font-size: 17px; 
+      font-size: 16px; 
       font-weight: bold; 
       padding: 18px; 
       width: 100%; 
       cursor: pointer; 
-      background: linear-gradient(135deg, #dfc08d 0%, #c9a063 100%); 
+      background-color: #3b82f6; 
       color: #fff; 
       border: none; 
-      border-radius: 50px; 
+      border-radius: 12px; 
       transition: 0.3s; 
-      box-shadow: 0 8px 20px rgba(201, 160, 99, 0.3);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
       margin-top: 10px;
     }
     button:active { transform: scale(0.98); }
@@ -97,16 +98,15 @@
     #resultArea { 
       display: none; 
       margin-top: 20px; 
-      padding: 25px; 
-      background: #fdfdfd; 
-      border-radius: 16px; 
-      border: 1px solid #f2f2f2;
+      padding: 20px; 
+      background: #f8fafc; 
+      border-radius: 12px; 
     }
     #resTxt { 
       white-space: pre-wrap; 
       font-size: 15px; 
-      color: #4a4a4a; 
-      line-height: 1.8; 
+      color: #334155; 
+      line-height: 1.7; 
     }
   </style>
 </head>
@@ -116,11 +116,17 @@
     
     <div id="inputForm">
       <span class="label-text">受け取り方法</span>
-      <label class="radio-label"><input type="radio" name="type" value="list" checked><span>キーワード一覧（全9数）</span></label>
-      <label class="radio-label"><input type="radio" name="type" value="report"><span>解説メッセージ（主要3数）</span></label>
+      <label class="radio-label">
+        <input type="radio" name="type" value="list" checked>
+        <span>キーワード一覧（全9数）</span>
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="type" value="report">
+        <span>解説メッセージ（主要3数）</span>
+      </label>
       
       <span class="label-text">お名前</span>
-      <input id="name" type="text" placeholder="例：花子">
+      <input id="name" type="text" placeholder="例：はなこ">
       
       <span class="label-text">生年月日（8桁）</span>
       <input id="birth" type="number" placeholder="例：19900101">
@@ -130,7 +136,7 @@
 
     <div id="resultArea">
       <div id="resTxt"></div>
-      <button onclick="liff.closeWindow()" style="margin-top:30px; background:#f0f0f0; color:#888; box-shadow:none;">閉じる</button>
+      <button onclick="liff.closeWindow()" style="margin-top:25px; background:#e2e8f0; color:#64748b; box-shadow:none;">閉じる</button>
     </div>
   </div>
 
@@ -151,7 +157,7 @@
       
       if (!name || birth.length !== 8) { alert("入力を確認してください"); return; }
       
-      btn.disabled = true; btn.innerText = "計算中...";
+      btn.disabled = true; btn.innerText = "診断中...";
 
       try {
         const res = await fetch(GAS_URL, { 
