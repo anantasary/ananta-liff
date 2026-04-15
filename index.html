@@ -11,13 +11,9 @@
     .radio-label { display: block; margin-bottom: 12px; cursor: pointer; padding: 15px; font-size: 16px; font-weight: 500; border: 1px solid #ddd; border-radius: 8px; }
     .input-label { font-size: 14px; color: #444; font-weight: bold; letter-spacing: 0.12em; display: block; margin-bottom: 10px; }
     input[type="text"], input[type="number"] { font-size: 18px; padding: 12px 5px; width: 100%; margin-bottom: 30px; box-sizing: border-box; border: none; border-bottom: 2px solid #eee; background-color: transparent; }
+    input::placeholder { color: #ccc; }
     button { font-size: 16px; font-weight: bold; letter-spacing: 0.2em; padding: 18px; width: 100%; cursor: pointer; background-color: transparent; color: #ffc1cc; border: 2px solid #ffc1cc; border-radius: 40px; margin-top: 30px; }
-    
-    /* 【追加】結果表示エリアのスタイル */
-    #resultArea { display: none; margin-top: 20px; padding: 20px; background: #fafafa; border-radius: 15px; border: 1px solid #eee; }
-    .result-item { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 8px 0; font-size: 15px; }
-    .result-pos { color: #888; }
-    .result-val { font-weight: bold; color: #b58d94; }
+    #resultArea { display: none; margin-top: 20px; padding: 20px; background: #fafafa; border-radius: 15px; border: 1px solid #eee; white-space: pre-wrap; }
   </style>
 </head>
 <body>
@@ -25,8 +21,8 @@
   <div id="inputForm">
     <div class="option-group">
       <span class="option-title">RECEIVE OPTION</span>
-      <label class="radio-label"><input type="radio" name="type" value="list" checked> キーワード一覧（ウェブで見る）</label>
-      <label class="radio-label"><input type="radio" name="type" value="report"> 解説メッセージ（LINEに送る）</label>
+      <label class="radio-label"><input type="radio" name="type" value="list" checked> <span>キーワード一覧（全9数）</span></label>
+      <label class="radio-label"><input type="radio" name="type" value="report"> <span>解説メッセージ（主要3数）</span></label>
     </div>
 
     <span class="input-label">YOUR NAME</span>
@@ -38,7 +34,7 @@
   </div>
 
   <div id="resultArea">
-    <div id="resultContent"></div>
+    <div id="resultContent" style="font-size: 15px; color: #555;"></div>
     <button onclick="liff.closeWindow()" style="margin-top:20px; border-color:#ccc; color:#888;">閉じる</button>
   </div>
 
@@ -51,51 +47,40 @@
       if (!liff.isLoggedIn()) liff.login();
     }
 
-    // 数字を計算するロジック（ウェブ表示用）
-    function calculate(birth) {
-      const reduce = (n) => {
-        n = Number(n);
-        while (n > 11) n = String(n).split('').reduce((a, b) => Number(a) + Number(b), 0);
-        return n;
-      };
-      const sumAll = (s) => s.split('').reduce((a, b) => a + Number(b), 0);
-      
-      return {
-        "ソウル": reduce(birth.substring(6, 8)),
-        "レッスン": reduce(birth.substring(4, 6)),
-        "ファンデーション": reduce(Number(birth.substring(4, 6)) + Number(birth.substring(6, 8))),
-        "ギフト": reduce(birth.substring(2, 4)),
-        "パスト": reduce(birth.substring(0, 4)),
-        "アセット": reduce(reduce(birth.substring(2, 4)) + reduce(birth.substring(0, 4))),
-        "プロジェクション": reduce(sumAll(birth)),
-        "コア": reduce(reduce(birth.substring(4, 6)) + reduce(sumAll(birth))),
-        "パーパス": reduce(sumAll(birth))
-      };
-    }
-
     async function send() {
+      const btn = document.getElementById("sendBtn");
       const name = document.getElementById("name").value;
       const birth = document.getElementById("birth").value;
       const type = document.querySelector('input[name="type"]:checked').value;
 
       if (!name || birth.length !== 8) { alert("正しく入力してください"); return; }
 
-      // 1. スプシ保存とLINE送信のためにGASへデータは飛ばす
-      fetch(GAS_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ name, birth, type, userId: liff.getContext()?.userId }) });
+      btn.disabled = true;
+      btn.innerText = "CALCULATING...";
 
-      // 2. 「一覧」なら画面を書き換えて終了
-      if (type === "list") {
-        const nums = calculate(birth);
-        let html = `<div style="text-align:center; font-weight:bold; margin-bottom:20px;">${name}さんの診断結果</div>`;
-        for (let key in nums) {
-          html += `<div class="result-item"><span class="result-pos">${key}</span><span class="result-val">${nums[key]}</span></div>`;
+      try {
+        // GASにデータを送り、結果を受け取る
+        const response = await fetch(GAS_URL, {
+          method: "POST",
+          body: JSON.stringify({ name, birth, type, userId: liff.getContext()?.userId })
+        });
+        const resData = await response.json();
+
+        if (type === "list") {
+          // 「一覧」なら、GASから返ってきたキーワード付きの文章を表示
+          document.getElementById("inputForm").style.display = "none";
+          document.getElementById("resultContent").innerText = resData.report;
+          document.getElementById("resultArea").style.display = "block";
+        } else {
+          alert("LINEへ解説を送信しました！");
+          liff.closeWindow();
         }
-        document.getElementById("inputForm").style.display = "none";
-        document.getElementById("resultContent").innerHTML = html;
-        document.getElementById("resultArea").style.display = "block";
-      } else {
-        alert("LINEへ解説を送信しました！");
-        liff.closeWindow();
+      } catch (e) {
+        alert("エラーが発生しました。");
+        console.error(e);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "RESULT";
       }
     }
     main();
