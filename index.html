@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ヨガ数秘学 診断</title>
   <style>
-    /* 「くすみ」を排除した、光を感じるデザイン */
+    /* くすみを排除した高発色デザイン */
     body { 
       font-size: 16px; 
       padding: 40px 20px; 
       font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif; 
-      background-color: #f7f9fa; /* 明るく爽やかな背景 */
+      background-color: #f7f9fa; 
       color: #333; 
     }
     .container { 
@@ -19,19 +19,17 @@
       background: #ffffff; 
       padding: 35px 25px; 
       border-radius: 24px; 
-      box-shadow: 0 20px 40px rgba(0,0,0,0.08); /* 浮遊感のある影 */
+      box-shadow: 0 15px 35px rgba(0,0,0,0.06); 
     }
     
     h2 { 
-      font-size: 20px; 
+      font-size: 19px; 
       text-align: center; 
-      color: #d4af37; /* 鮮やかなゴールド */
+      color: #d4af37; /* 明るいゴールド */
       margin-bottom: 30px; 
       font-weight: bold;
-      letter-spacing: 0.1em;
     }
     
-    /* 選択肢：明るく清潔に */
     .radio-label { 
       display: flex; 
       align-items: center; 
@@ -42,11 +40,10 @@
       border-radius: 16px; 
       cursor: pointer; 
       font-weight: bold; 
-      transition: 0.2s;
     }
     .radio-label:has(input:checked) {
       border-color: #d4af37;
-      background: #fffdf7;
+      background: #fffdf9;
     }
     input[type="radio"] { 
       margin-right: 12px; 
@@ -56,11 +53,10 @@
     
     .label-text { 
       font-size: 13px; 
-      color: #b0b0b0; 
+      color: #999; 
       font-weight: bold; 
       margin-bottom: 8px; 
       display: block; 
-      padding-left: 5px;
     }
     
     input[type="text"], input[type="number"] { 
@@ -71,64 +67,60 @@
       box-sizing: border-box; 
       border: 2px solid #f0f0f0; 
       border-radius: 12px; 
-      background: #fff; 
-      transition: 0.3s;
-    }
-    input:focus {
-      outline: none;
-      border-color: #d4af37;
     }
     
-    /* ボタン：華やかなゴールド */
     button { 
       font-size: 17px; 
       font-weight: bold; 
       padding: 18px; 
       width: 100%; 
       cursor: pointer; 
-      background: linear-gradient(135deg, #e6c258 0%, #d4af37 100%); /* 輝きのあるグラデーション */
+      background: linear-gradient(135deg, #eecb67 0%, #d4af37 100%); 
       color: #fff; 
       border: none; 
       border-radius: 50px; 
-      transition: 0.3s; 
-      box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+      box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3);
       margin-top: 10px;
     }
-    button:active { transform: scale(0.98); }
 
-    /* 結果表示：パッと見やすく */
     #resultArea { 
       display: none; 
       margin-top: 20px; 
       padding: 25px; 
-      background: #fdfdfd; 
+      background: #fff; 
       border-radius: 16px; 
       border: 1px solid #f0f0f0;
     }
     #resTxt { 
       white-space: pre-wrap; 
-      font-size: 16px; 
+      font-size: 15px; 
       color: #333; 
-      line-height: 1.9; 
+      line-height: 1.8; 
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Yoga Numerology</h2>
+    <h2>ヨガ数秘学 診断ツール</h2>
     
     <div id="inputForm">
-      <span class="label-text">診断方法</span>
-      <label class="radio-label"><input type="radio" name="type" value="list" checked><span>全9つの数字を一覧で見る</span></label>
-      <label class="radio-label"><input type="radio" name="type" value="report"><span>解説をLINEで受け取る</span></label>
+      <span class="label-text">受け取り方法</span>
+      <label class="radio-label">
+        <input type="radio" name="type" value="list" checked>
+        <span>キーワード一覧（全9数）</span>
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="type" value="report">
+        <span>解説メッセージ（主要3数）</span>
+      </label>
       
       <span class="label-text">お名前</span>
       <input id="name" type="text" placeholder="例：花子">
       
-      <span class="label-text">生年月日（8桁）</span>
+      <span class="label-text">生年月日（半角数字8桁）</span>
       <input id="birth" type="number" placeholder="例：19900101">
       
-      <button id="sendBtn" onclick="send()">診断する</button>
+      <button id="sendBtn" onclick="send()">診断結果を見る</button>
     </div>
 
     <div id="resultArea">
@@ -152,7 +144,10 @@
       const birth = document.getElementById("birth").value;
       const type = document.querySelector('input[name="type"]:checked').value;
       
-      if (!name || birth.length !== 8) { alert("入力を確認してください"); return; }
+      if (!name || birth.length !== 8) { 
+        alert("お名前と生年月日（8桁）を正しく入力してください。"); 
+        return; 
+      }
       
       btn.disabled = true; btn.innerText = "計算中...";
 
@@ -165,15 +160,14 @@
         
         if (type === "list") {
           document.getElementById("inputForm").style.display = "none";
-          // Undefined対策：確実にjson.reportを表示
           document.getElementById("resTxt").innerText = json.report; 
           document.getElementById("resultArea").style.display = "block";
         } else {
-          alert("LINEへ診断結果を送りました！");
+          alert("LINEへ診断結果を送りました！トーク画面を確認してください。");
           liff.closeWindow();
         }
-      } catch (e) { alert("エラーが発生しました。"); } finally { 
-        btn.disabled = false; btn.innerText = "診断する"; 
+      } catch (e) { alert("エラーが発生しました。再度お試しください。"); } finally { 
+        btn.disabled = false; btn.innerText = "診断結果を見る"; 
       }
     }
     main();
