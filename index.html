@@ -3,166 +3,101 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ヨガ数秘学 診断入力</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+  <title>ヨガ数秘学 診断</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <style>
-    /* * 全体の設定：
-     * 背景は潔く白（#fff）。文字は深いネイビー（#1A253A）で知的に。
-     */
+    /* 全体を重厚な黒に */
     body { 
       font-size: 16px; 
-      padding: 50px 20px; 
-      font-family: "Helvetica Neue", Arial, "Hiragino Mincho ProN", "MS Mincho", serif; /* 和文は少しシャープに */
-      background-color: #ffffff; 
-      color: #1A253A; 
+      padding: 60px 20px; 
+      font-family: "Hiragino Mincho ProN", "MS Mincho", serif; 
+      background-color: #0d0d0d; 
+      color: #ffffff; 
       line-height: 1.8; 
-      letter-spacing: 0.03em;
     }
 
-    .container {
-      max-width: 450px;
-      margin: 0 auto;
-    }
+    .container { max-width: 450px; margin: 0 auto; }
 
-    /* * 選択エリア：
-     * 枠線をなくし、背景色をごく薄いグレーにしてスッキリと。
-     */
-    .option-group { 
-      margin-bottom: 40px; 
-      padding: 0; 
-      background: #ffffff; 
-    }
-    
-    /* * 英語見出し（RECEIVE OPTION）：
-     * ここを洗練されたセリフ体に。文字間隔を広げて高級感を。
-     */
-    .option-title { 
+    /* 見出し：圧倒的なゴールド */
+    .option-title, .input-label { 
       display: block; 
-      margin-bottom: 25px; 
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 600; 
+      font-family: 'Playfair Display', serif;
+      font-weight: 700; 
       font-size: 14px;     
-      color: #1A253A; 
+      color: #d4af37; /* 本物のゴールド */
       text-align: center;
       letter-spacing: 0.3em;
+      margin-bottom: 20px;
       text-transform: uppercase;
     }
 
+    /* 選択肢：線ではなく「塊」で見せる */
     .radio-label { 
       display: flex;
       align-items: center;
       margin-bottom: 15px; 
       cursor: pointer; 
-      padding: 18px 20px; 
-      font-size: 15px;    
-      font-weight: normal;
-      background: #f8f9fa; /* ごく薄いグレー */
-      border-radius: 4px; /* 角丸を小さく */
-      transition: all 0.2s ease;
+      padding: 20px; 
+      font-size: 16px;    
+      font-weight: bold;
+      background: #1a1a1a; 
+      border: 1px solid #333;
+      border-radius: 0; 
+      transition: 0.3s;
     }
     
-    /* 選択肢ホバー時にゴールドの線を薄く出す */
-    .radio-label:hover {
-      background: #f1f3f5;
-    }
-    
-    /* ラジオボタン自体の色をネイビーに */
     input[type="radio"] {
-      accent-color: #1A253A; 
+      accent-color: #d4af37; 
       margin-right: 15px;
-      transform: scale(1.1);
+      transform: scale(1.5);
     }
 
-    /* * 入力項目のラベル（YOUR NAME）：
-     * セリフ体。色は少し薄くしてバランスを取る。
-     */
-    .input-label {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 14px;
-      color: #666;
-      font-weight: 600;
-      letter-spacing: 0.2em;
-      display: block;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-    }
-
-    /* * 入力欄：
-     * 下線のみに。これが最も都会的で洗練されたスタイル。
-     */
+    /* 入力欄：背景をつけて存在感を出す */
     input[type="text"], input[type="number"] { 
-      font-size: 17px; 
-      padding: 12px 0; 
+      font-size: 20px; 
+      padding: 15px; 
       width: 100%; 
-      margin-bottom: 35px; 
+      margin-bottom: 40px; 
       box-sizing: border-box; 
       border: none;
-      border-bottom: 1px solid #ccc;
-      background-color: transparent;
+      border-bottom: 2px solid #d4af37;
+      background-color: #1a1a1a;
+      color: #fff;
       border-radius: 0;
-      transition: all 0.3s;
-    }
-    
-    /* プレースホルダーを薄く */
-    input::placeholder { color: #ccc; font-weight: normal;}
-
-    /* フォーカス時にゴールドの下線を出す */
-    input[type="text"]:focus, input[type="number"]:focus {
-      outline: none;
-      border-bottom-color: #D4AF37; /* ゴールド */
     }
 
-    /* * ボタン：
-     * ネイビーの背景に白文字。これが最も信頼感を生む。
-     * 角丸をなくし、シャープな長方形に。
-     */
+    /* ボタン：黄金の塊 */
     button { 
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 15px; 
-      font-weight: 600; 
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      padding: 20px; 
+      font-family: 'Playfair Display', serif;
+      font-size: 18px; 
+      font-weight: 900; 
+      letter-spacing: 0.4em;
+      padding: 22px; 
       width: 100%; 
       cursor: pointer; 
-      background-color: #1A253A; /* ネイビー */
-      color: #ffffff; 
-      border: 1px solid #1A253A;
-      border-radius: 2px; /* ほぼ直角 */
-      margin-top: 15px; 
-      transition: all 0.3s ease;
+      background-color: #d4af37; 
+      color: #000; 
+      border: none;
+      margin-top: 10px; 
+      transition: 0.3s;
     }
     
-    /* ホバー時にゴールドの枠線とネイビーの文字に（反転） */
-    button:hover {
-      background-color: #ffffff; 
-      color: #1A253A; 
-      border-color: #D4AF37;
-    }
+    button:hover { background-color: #f1c40f; }
 
-    button:disabled { 
-      background-color: #e0e0e0;
-      border-color: #e0e0e0;
-      color: #a0a0a0;
-      cursor: not-allowed;
-    }
-
-    /* * 結果表示エリア：
-     * 凛としたたたずまいに。
-     */
+    /* 結果表示：読みやすく力強く */
     #resultArea { 
       display: none; 
       margin-top: 20px; 
-      padding: 40px; 
-      background: #ffffff; 
-      border-radius: 2px; 
-      border: 1px solid #eee;
+      padding: 30px; 
+      background: #1a1a1a; 
+      border: 2px solid #d4af37;
     }
     #resultContent {
       white-space: pre-wrap;
-      font-size: 14px;
-      color: #333;
-      line-height: 2.2; /* 行間をさらに広く */
+      font-size: 16px;
+      color: #fff;
+      line-height: 2.2;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -170,16 +105,10 @@
 
   <div class="container">
     <div id="inputForm">
+      <span class="option-title">RECEIVE OPTION</span>
       <div class="option-group">
-        <span class="option-title">RECEIVE OPTION</span>
-        <label class="radio-label">
-          <input type="radio" name="type" value="list" checked>
-          <span>キーワード一覧（全9数）</span>
-        </label>
-        <label class="radio-label">
-          <input type="radio" name="type" value="report">
-          <span>解説メッセージ（主要3数）</span>
-        </label>
+        <label class="radio-label"><input type="radio" name="type" value="list" checked><span>キーワード一覧（全9数）</span></label>
+        <label class="radio-label"><input type="radio" name="type" value="report"><span>解説メッセージ（主要3数）</span></label>
       </div>
 
       <span class="input-label">YOUR NAME</span>
@@ -193,21 +122,18 @@
 
     <div id="resultArea">
       <div id="resultContent"></div>
-      <button onclick="liff.closeWindow()" style="background-color: #ffffff; color: #777; border-color: #eee; margin-top: 30px;">CLOSE</button>
+      <button onclick="liff.closeWindow()" style="background:#333; color:#fff; margin-top:30px; font-size:14px;">CLOSE</button>
     </div>
   </div>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
+    // ★ここを自分のGASの最新URLに変えてください！
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwYkJz_KO8fHsFcXj6GdC4Zo1hWwjbgU2Opcm6DWh0p1g8dalbKKof_zFe6lp6D9oU/exec";
     
     async function main() {
-      try {
-        await liff.init({ liffId: "2009800795-TjgaXLF7" });
-        if (!liff.isLoggedIn()) liff.login();
-      } catch (e) {
-        console.error("LIFF初期化エラー", e);
-      }
+      await liff.init({ liffId: "2009800795-TjgaXLF7" });
+      if (!liff.isLoggedIn()) liff.login();
     }
 
     async function send() {
@@ -215,16 +141,16 @@
       const name = document.getElementById("name").value;
       const birth = document.getElementById("birth").value;
       const type = document.querySelector('input[name="type"]:checked').value;
-
-      if (!name || birth.length !== 8) { alert("お名前と生年月日(8桁)を入力してください"); return; }
-
+      
+      if (!name || birth.length !== 8) { alert("入力を確認してください"); return; }
+      
       btn.disabled = true;
       btn.innerText = "ANALYZING...";
 
       try {
         const response = await fetch(GAS_URL, {
           method: "POST",
-          body: JSON.stringify({ name, birth, type, userId: liff.getContext()?.userId })
+          body: JSON.stringify({ name: name, birth: birth, type: type, userId: liff.getContext()?.userId })
         });
         const resData = await response.json();
 
@@ -238,7 +164,6 @@
         }
       } catch (e) {
         alert("エラーが発生しました。");
-        console.error(e);
       } finally {
         btn.disabled = false;
         btn.innerText = "DIAGNOSIS";
