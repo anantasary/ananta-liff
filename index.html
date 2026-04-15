@@ -1,82 +1,87 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-      body {
-        font-size: 20px;
-        padding: 20px;
-        font-family: sans-serif;
-      }
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ヨガ数秘学 診断入力</title>
+  <style>
+    body { font-size: 20px; padding: 20px; font-family: sans-serif; }
+    input { font-size: 20px; padding: 10px; width: 100%; margin-bottom: 15px; box-sizing: border-box; }
+    button { font-size: 20px; padding: 12px; width: 100%; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px; }
+    button:disabled { background-color: #ccc; }
+  </style>
+</head>
+<body>
 
-      input {
-        font-size: 20px;
-        padding: 10px;
-        width: 100%;
-        margin-bottom: 15px;
-        box-sizing: border-box;
-      }
+  名前（ニックネームOK）<br>
+  <input id="name" type="text" placeholder="お名前">
 
-      button {
-        font-size: 20px;
-        padding: 12px;
-        width: 100%;
-      }
-    </style>
-  </head>
+  生年月日（西暦8桁）<br>
+  <input id="birth" type="number" placeholder="19900101">
 
-  <body>
+  <button id="sendBtn" onclick="send()">送信</button>
 
-    名前（ニックネームOK）<br>
-    <input id="name">
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script>
+    // ★新しいGASのURLに貼り替えてください★
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyPDfV-FglJeK_8tdPoQ8BN6B0elN-1m5lLhpf3beH4oudwtRL67O77TeC3SW7adB0/exec";
+    let userId = "";
 
-    生年月日（西暦8桁）<br>
-    <input id="birth" placeholder="19900101">
-
-    <button onclick="send()">送信</button>
-
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-
-    <script>
-      const GAS_URL = "https://script.google.com/macros/s/AKfycbyPDfV-FglJeK_8tdPoQ8BN6B0elN-1m5lLhpf3beH4oudwtRL67O77TeC3SW7adB0/exec";
-      let userId = "";
-
-      async function main() {
+    async function main() {
+      try {
         await liff.init({ liffId: "2009800795-TjgaXLF7" });
-
         if (!liff.isLoggedIn()) {
           liff.login();
-          return;
+        } else {
+          const profile = await liff.getProfile();
+          userId = profile.userId;
         }
+      } catch (e) {
+        console.error("LIFF初期化エラー", e);
+        alert("初期化に失敗しました。LINEアプリ内で開いてください。");
+      }
+    }
 
-        const profile = await liff.getProfile();
-        userId = profile.userId;
+    async function send() {
+      const btn = document.getElementById("sendBtn");
+      const name = document.getElementById("name").value;
+      const birth = document.getElementById("birth").value;
+
+      if (!name || !birth) {
+        alert("名前と生年月日を入力してください");
+        return;
       }
 
-      async function send() {
-        try {
-          const payload = {
-            userId: userId,
-            name: document.getElementById("name").value,
-            birth: document.getElementById("birth").value
-          };
+      btn.disabled = true;
+      btn.innerText = "送信中...";
 
-          await fetch(GAS_URL, {
-            method: "POST",
-            body: JSON.stringify(payload)
-          });
+      const payload = {
+        userId: userId,
+        name: name,
+        birth: birth
+      };
 
-          alert("送信完了");
-          liff.closeWindow();
+      try {
+        // GASへの送信（no-corsモードでCORSエラーを回避）
+        await fetch(GAS_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
 
-        } catch (e) {
-          alert("送信エラー");
-          console.log(e);
-        }
+        alert("送信が完了しました！");
+        liff.closeWindow();
+      } catch (e) {
+        console.error("送信エラー", e);
+        alert("送信に失敗しました。ネット環境を確認してください。");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "送信";
       }
+    }
 
-      main();
-    </script>
-
-  </body>
+    main();
+  </script>
+</body>
 </html>
