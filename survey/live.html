@@ -135,7 +135,7 @@
       const yes = responses.filter((r) => r.answers.q1 === "エントリーしている").length;
       $("slide").innerHTML = `<div class="welcome"><div>
           <h1>${esc(SURVEY.title)}</h1>
-          <div class="subt">${esc(SURVEY.subtitle)}にご協力ください</div>
+          <div class="subt">ご協力をお願いします</div>
           <div class="big">${total}<small>件の回答</small></div>
           <div class="split">
             <div class="pill">エントリーしている<b>${yes}</b></div>

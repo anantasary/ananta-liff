@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>糖活ぶっちゃけおしゃべり会 糖活についてのアンケート</title>
-  <meta property="og:title" content="糖活ぶっちゃけおしゃべり会 糖活についてのアンケート">
+  <title>糖活アンケート</title>
+  <meta property="og:title" content="糖活アンケート">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://anantasary.github.io/ananta-liff/survey/">
   <meta property="og:image" content="https://anantasary.github.io/ananta-liff/survey/ananta-logo.png">
@@ -68,7 +68,7 @@
     const app = document.getElementById("app");
     document.getElementById("title").textContent = SURVEY.title;
     document.getElementById("subtitle").textContent = SURVEY.subtitle;
-    document.title = SURVEY.title + " " + SURVEY.subtitle;
+    document.title = [SURVEY.title, SURVEY.subtitle].filter(Boolean).join(" ");
     if (!GAS_URL && IS_LOCAL) document.getElementById("demo").hidden = false;
 
     function currentSection() {
