@@ -47,7 +47,7 @@ const QUESTIONS = [
     text: "続けられている工夫や、うまくいっていることはありますか？" },
   { id: "q6", no: 6, section: 2, type: "text",
     text: "いま悩んでいること・つまずいていることを教えてください。" },
-  { id: "q7", no: 7, section: 2, type: "multi",
+  { id: "q7", no: 7, section: 2, type: "multi", required: true,
     text: "糖活を始めてから起こった変化はありますか？",
     options: [
       "体重・体型が変わった", "食後の眠気が減った", "疲れにくくなった",
