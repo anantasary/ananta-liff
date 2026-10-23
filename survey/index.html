@@ -76,6 +76,13 @@
     function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
     function render() {
+      if (step === -1) {
+        app.innerHTML = `<div class="done"><div class="icon">✅</div><h2>この端末からは回答済みです</h2>
+          <p>ご協力ありがとうございました。<br>おしゃべり会でお会いしましょう！</p>
+          <div class="nav"><button class="btn-sub" id="again">別の人として回答する</button></div></div>`;
+        document.getElementById("again").onclick = () => { step = 0; render(); };
+        return;
+      }
       if (step === 3) {
         app.innerHTML = `<div class="done"><div class="icon">🌿</div><h2>ご回答ありがとうございました！</h2>
           <p>おしゃべり会でお会いできるのを<br>楽しみにしています。</p></div>`;
@@ -171,6 +178,7 @@
       btn.disabled = true; btn.textContent = "送信中…";
       try {
         await saveResponse({ id, answers: final, headers, row, t: new Date().toISOString() });
+        try { localStorage.setItem("toukatsu_survey_done", "1"); } catch (e) {}
         step = 3; render();
       } catch (e) {
         alert("送信できませんでした。電波の良いところでもう一度お試しください。");
@@ -178,6 +186,7 @@
       }
     }
 
+    try { if (localStorage.getItem("toukatsu_survey_done")) step = -1; } catch (e) {}
     render();
   </script>
 </body>

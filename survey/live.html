@@ -51,6 +51,8 @@
     .welcome .subt { font-size: clamp(18px, 2vw, 26px); color: var(--sub); margin-bottom: 30px; }
     .welcome .big { font-size: clamp(60px, 9vw, 130px); font-weight: 900; color: var(--main); line-height: 1; }
     .welcome .big small { font-size: .3em; color: var(--text); margin-left: 8px; }
+    .today { font-size: clamp(16px, 1.6vw, 22px); color: var(--sub); margin-top: 10px; }
+    .today b { color: var(--accent); font-size: 1.3em; }
     .split { display: flex; gap: 14px; margin-top: 26px; flex-wrap: wrap; }
     .pill { background: #fff; border-radius: 16px; padding: 14px 22px; font-size: 18px; border: 1px solid var(--line); }
     .pill b { font-size: 30px; color: var(--main); margin-left: 8px; }
@@ -126,10 +128,13 @@
     function renderHome() {
       const total = responses.length;
       const yes = responses.filter((r) => r.answers.q1 === "取り組んでいる").length;
+      const today = new Date().toDateString();
+      const todayCount = responses.filter((r) => r.t && new Date(r.t).toDateString() === today).length;
       $("slide").innerHTML = `<div class="welcome"><div>
           <h1>${esc(SURVEY.title)}</h1>
           <div class="subt">${esc(SURVEY.subtitle)}にご協力ください</div>
           <div class="big">${total}<small>件の回答</small></div>
+          <div class="today">事前の回答 ${total - todayCount}件 ＋ 今日の回答 <b>${todayCount}</b>件</div>
           <div class="split">
             <div class="pill">取り組んでいる<b>${yes}</b></div>
             <div class="pill s3">まだ取り組んでいない<b>${total - yes}</b></div>
