@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>糖活アンケート ライブ集計</title>
+  <link href="https://fonts.googleapis.com/css2?family=Arizonia&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --main: #00C2C3; --soft: #81D8D0; --bg: #f0f9f9; --pale: #f0fdfd; --line: #e0f2f2; --text: #2f3b3b; --sub: #708090; --accent: #f29e6b; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body { font-family: "Noto Sans JP", "Helvetica Neue", Arial, sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; }
+    header { display: flex; align-items: center; gap: 14px; padding: 12px 20px; background: #fff; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+    .logo { font-family: 'Arizonia', cursive; font-size: 30px; color: var(--sub); line-height: 1; }
+    .ttl { font-weight: 700; font-size: 16px; }
+    .spacer { flex: 1; }
+    .live { font-size: 13px; color: var(--sub); display: flex; align-items: center; gap: 6px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: #2bc47d; animation: pulse 2s infinite; }
+    .dot.off { background: #d6455d; animation: none; }
+    @keyframes pulse { 50% { opacity: .3; } }
+    .count { background: var(--pale); border-radius: 30px; padding: 6px 16px; font-weight: 700; color: #3b5a5a; }
+    .count b { color: var(--main); font-size: 20px; }
+    select, .navbtn { font: inherit; font-size: 14px; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: #fff; cursor: pointer; }
+    .navbtn { font-weight: 700; color: #3b5a5a; min-width: 44px; }
+    #jump { max-width: 240px; }
+    main { flex: 1; overflow: auto; padding: 32px 5vw 48px; }
+    .slide { max-width: 1200px; margin: 0 auto; }
+    .sec { display: inline-block; font-size: 15px; font-weight: 700; color: #fff; background: var(--main); padding: 4px 14px; border-radius: 20px; margin-bottom: 14px; }
+    .sec.s3 { background: var(--accent); }
+    h2 { font-size: clamp(24px, 3.2vw, 42px); margin: 0 0 8px; line-height: 1.4; }
+    h2 .no { color: var(--main); margin-right: 10px; }
+    .n { color: var(--sub); font-size: 16px; margin-bottom: 28px; }
+    .bars { display: flex; flex-direction: column; gap: 12px; }
+    .bar { display: grid; grid-template-columns: minmax(140px, 32%) 1fr 110px; align-items: center; gap: 16px; font-size: clamp(16px, 1.6vw, 22px); }
+    .bar .lbl { text-align: right; font-weight: 700; }
+    .track { background: #fff; border-radius: 10px; height: clamp(26px, 3vw, 40px); overflow: hidden; border: 1px solid var(--line); }
+    .fill { height: 100%; background: linear-gradient(90deg, var(--soft), var(--main)); border-radius: 10px; transition: width .8s cubic-bezier(.2,.8,.2,1); }
+    .bar.top .fill { background: linear-gradient(90deg, #f7c59f, var(--accent)); }
+    .bar .val { font-weight: 900; color: #3b5a5a; }
+    .bar .val small { font-weight: 400; color: var(--sub); font-size: .75em; margin-left: 4px; }
+    .notes { margin-top: 28px; }
+    .notes h3 { font-size: 18px; color: var(--sub); margin: 0 0 12px; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+    .card { background: #fff; border-radius: 16px; padding: 20px 22px; font-size: clamp(17px, 1.6vw, 22px); line-height: 1.75; white-space: pre-wrap; word-break: break-word; border: 1px solid var(--line); box-shadow: 0 6px 18px rgba(0,194,195,.06); position: relative; }
+    .card .tag { display: block; font-size: 13px; color: var(--main); font-weight: 700; margin-bottom: 4px; }
+    .card.new { animation: pop 1.2s ease; border-color: var(--main); }
+    @keyframes pop { 0% { transform: scale(.9); opacity: 0; } 60% { transform: scale(1.02); opacity: 1; } 100% { transform: none; } }
+    .empty { color: var(--sub); font-size: 20px; padding: 40px 0; }
+    .welcome { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: center; }
+    .welcome h1 { font-size: clamp(30px, 4.5vw, 60px); margin: 0 0 6px; line-height: 1.3; }
+    .welcome .subt { font-size: clamp(18px, 2vw, 26px); color: var(--sub); margin-bottom: 30px; }
+    .welcome .big { font-size: clamp(60px, 9vw, 130px); font-weight: 900; color: var(--main); line-height: 1; }
+    .welcome .big small { font-size: .3em; color: var(--text); margin-left: 8px; }
+    .split { display: flex; gap: 14px; margin-top: 26px; flex-wrap: wrap; }
+    .pill { background: #fff; border-radius: 16px; padding: 14px 22px; font-size: 18px; border: 1px solid var(--line); }
+    .pill b { font-size: 30px; color: var(--main); margin-left: 8px; }
+    .pill.s3 b { color: var(--accent); }
+    .qr { background: #fff; padding: 22px; border-radius: 20px; text-align: center; border: 1px solid var(--line); }
+    .qr #qrcode img, .qr #qrcode canvas { margin: 0 auto; }
+    .qr p { margin: 12px 0 0; font-size: 15px; color: var(--sub); }
+    .qr .url { font-size: 12px; word-break: break-all; max-width: 260px; margin: 6px auto 0; }
+    .demo { background: #fff6e0; color: #8a6a00; font-size: 13px; padding: 6px 12px; border-radius: 8px; }
+    .err { background: #ffe9ec; color: #d6455d; font-size: 13px; padding: 6px 12px; border-radius: 8px; }
+    .keys { position: fixed; right: 14px; bottom: 10px; font-size: 12px; color: #a8bcbc; }
+    @media (max-width: 720px) {
+      .welcome { grid-template-columns: 1fr; }
+      .bar { grid-template-columns: 1fr 70px; gap: 6px 10px; }
+      .bar .lbl { grid-column: 1 / -1; text-align: left; }
+      .keys { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="logo">Ananta</span>
+    <span class="ttl">ライブ集計</span>
+    <span id="mode"></span>
+    <span class="spacer"></span>
+    <span class="live"><span class="dot" id="dot"></span><span id="updated">接続中…</span></span>
+    <span class="count">回答 <b id="total">0</b> 件</span>
+    <button class="navbtn" id="prev" aria-label="前へ">←</button>
+    <select id="jump"></select>
+    <button class="navbtn" id="next" aria-label="次へ">→</button>
+  </header>
+  <main><div class="slide" id="slide"></div></main>
+  <div class="keys">← → キーで切り替え</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="questions.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const DEMO = params.has("demo");
+    const REFRESH_MS = 5000;
+    const FORM_URL = new URL("index.html", location.href).href;
+
+    // スライド一覧：0=表紙(QR), 以降は質問ごと
+    const SLIDES = [{ key: "home", label: "表紙・参加用QR" }].concat(
+      QUESTIONS.map((q) => ({ key: q.id, label: "Q" + q.no + " " + (q.text.length > 18 ? q.text.slice(0, 18) + "…" : q.text) }))
+    );
+    let idx = Math.max(0, SLIDES.findIndex((s) => s.key === (location.hash.slice(1) || "home")));
+    let responses = [];
+    let seen = new Set();      // 表示済みの回答ID（新着アニメ用）
+    let lastSig = "";
+
+    const $ = (id) => document.getElementById(id);
+    function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+    $("jump").innerHTML = SLIDES.map((s, i) => `<option value="${i}">${esc(s.label)}</option>`).join("");
+    if (DEMO) $("mode").innerHTML = `<span class="demo">デモ表示（サンプルデータ）</span>`;
+    else if (!GAS_URL) $("mode").innerHTML = `<span class="demo">お試しモード（この端末の回答のみ）</span>`;
+
+    function go(i) {
+      idx = (i + SLIDES.length) % SLIDES.length;
+      history.replaceState(null, "", "#" + SLIDES[idx].key);
+      render(true);
+    }
+    $("prev").onclick = () => go(idx - 1);
+    $("next").onclick = () => go(idx + 1);
+    $("jump").onchange = (e) => go(+e.target.value);
+    document.addEventListener("keydown", (e) => {
+      if (e.target.tagName === "SELECT") return;
+      if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") { e.preventDefault(); go(idx + 1); }
+      if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); go(idx - 1); }
+    });
+
+    function renderHome() {
+      const total = responses.length;
+      const yes = responses.filter((r) => r.answers.q1 === "取り組んでいる").length;
+      $("slide").innerHTML = `<div class="welcome"><div>
+          <h1>${esc(SURVEY.title)}</h1>
+          <div class="subt">${esc(SURVEY.subtitle)}にご協力ください</div>
+          <div class="big">${total}<small>件の回答</small></div>
+          <div class="split">
+            <div class="pill">取り組んでいる<b>${yes}</b></div>
+            <div class="pill s3">まだ取り組んでいない<b>${total - yes}</b></div>
+          </div></div>
+        <div class="qr"><div id="qrcode"></div><p>スマホで読み取って回答</p><div class="url">${esc(FORM_URL)}</div></div>
+      </div>`;
+      if (window.QRCode) new QRCode($("qrcode"), { text: FORM_URL, width: 240, height: 240, colorDark: "#2f3b3b", colorLight: "#ffffff" });
+    }
+
+    function renderQuestion(q, animate) {
+      const sectionResp = responses.filter((r) => {
+        if (q.section === 2) return r.answers.q1 === "取り組んでいる";
+        if (q.section === 3) return r.answers.q1 === "まだ取り組んでいない";
+        return true;
+      });
+      const answered = sectionResp.filter((r) => r.answers[q.id] != null);
+      const secLabel = q.section === 1 || q.section === 4 ? "全員" : SECTION_NAMES[q.section];
+      let html = `<span class="sec ${q.section === 3 ? "s3" : ""}">${esc(secLabel)}への質問</span>
+        <h2><span class="no">Q${q.no}</span>${esc(q.text)}</h2>
+        <div class="n">回答 ${answered.length} 人${q.section === 2 || q.section === 3 ? `（対象 ${sectionResp.length} 人）` : ""}${q.type === "multi" ? "・複数選択" : ""}</div>`;
+
+      if (q.type === "single" || q.type === "multi") {
+        const counts = q.options.map((o) => {
+          const l = optLabel(o);
+          return answered.filter((r) => (q.type === "single" ? r.answers[q.id] === l : r.answers[q.id].sel.includes(l))).length;
+        });
+        const max = Math.max(1, ...counts);
+        const denom = Math.max(1, answered.length);
+        html += `<div class="bars">` + q.options.map((o, i) => {
+          const c = counts[i];
+          return `<div class="bar ${c > 0 && c === Math.max(...counts) ? "top" : ""}">
+            <div class="lbl">${esc(optLabel(o))}</div>
+            <div class="track"><div class="fill" data-w="${(c / max) * 100}" style="width:${animate ? 0 : (c / max) * 100}%"></div></div>
+            <div class="val">${c}<small>人・${Math.round((c / denom) * 100)}%</small></div></div>`;
+        }).join("") + `</div>`;
+        if (q.type === "multi") {
+          const notes = [];
+          answered.forEach((r) => {
+            const n = r.answers[q.id].notes || {};
+            Object.keys(n).forEach((k) => notes.push({ id: r.id, tag: k, text: n[k] }));
+          });
+          if (notes.length) html += `<div class="notes"><h3>記入された内容</h3><div class="cards">` +
+            notes.map((n) => `<div class="card ${seen.has(n.id) ? "" : "new"}"><span class="tag">${esc(n.tag)}</span>${esc(n.text)}</div>`).join("") + `</div></div>`;
+        }
+      } else {
+        if (!answered.length) html += `<div class="empty">まだ回答はありません</div>`;
+        else {
+          // 新しい回答が上に来るように
+          const list = answered.slice().reverse();
+          html += `<div class="cards">` + list.map((r) => {
+            const tag = q.section === 4 ? (r.answers.q1 === "取り組んでいる" ? "取り組んでいる方" : "まだ取り組んでいない方") : "";
+            return `<div class="card ${seen.has(r.id) ? "" : "new"}">${tag ? `<span class="tag">${tag}</span>` : ""}${esc(r.answers[q.id])}</div>`;
+          }).join("") + `</div>`;
+        }
+      }
+      $("slide").innerHTML = html;
+      if (animate) requestAnimationFrame(() => requestAnimationFrame(() =>
+        document.querySelectorAll(".fill").forEach((f) => (f.style.width = f.dataset.w + "%"))));
+    }
+
+    function render(animate) {
+      $("jump").value = idx;
+      $("total").textContent = responses.length;
+      const s = SLIDES[idx];
+      if (s.key === "home") renderHome();
+      else renderQuestion(QUESTIONS.find((q) => q.id === s.key), animate);
+      responses.forEach((r) => seen.add(r.id));
+    }
+
+    async function refresh(first) {
+      try {
+        responses = DEMO ? demoData() : await loadResponses();
+        $("dot").classList.remove("off");
+        $("updated").textContent = "最終更新 " + new Date().toLocaleTimeString("ja-JP");
+        const sig = responses.map((r) => r.id).join(",");
+        if (first || sig !== lastSig) { lastSig = sig; render(first); }
+      } catch (e) {
+        $("dot").classList.add("off");
+        $("updated").textContent = "接続できません（自動で再試行します）";
+      }
+    }
+
+    function demoData() {
+      const pick = (arr, n) => arr.slice().sort(() => Math.random() - 0.5).slice(0, n).map(optLabel);
+      const q = (id) => QUESTIONS.find((x) => x.id === id);
+      const texts = ["朝ごはんをたんぱく質中心にしたら午前中の集中力が続くようになりました", "食後に10分歩くのを習慣にしています", "甘いものがやめられない…", "家族と食事を分けるのが大変", "みなさんのおやつ事情を聞きたいです", "続けるコツを知りたい", "楽しみにしています！"];
+      const out = [];
+      for (let i = 0; i < 12; i++) {
+        const doing = i % 3 !== 0;
+        const a = { q1: doing ? "取り組んでいる" : "まだ取り組んでいない" };
+        if (doing) {
+          a.q2 = optLabel(q("q2").options[i % 5]);
+          a.q3 = { sel: pick(q("q3").options.slice(0, 6), 2), notes: {} };
+          a.q4 = { sel: pick(q("q4").options.slice(0, 9), 3), notes: {} };
+          a.q5 = texts[i % 2]; a.q6 = texts[2 + (i % 2)];
+          a.q7 = { sel: pick(q("q7").options.slice(0, 11), 3), notes: {} };
+          a.q8 = "体が軽い毎日を過ごしたい";
+        } else {
+          a.q9 = { sel: pick(q("q9").options.slice(0, 6), 2), notes: {} };
+          a.q10 = { sel: pick(q("q10").options.slice(0, 12), 3), notes: {} };
+          a.q11 = "何から始めたらいいかわからない";
+        }
+        a.q12 = texts[4 + (i % 2)];
+        if (i % 2) a.q14 = texts[6];
+        out.push({ id: "demo" + i, answers: a });
+      }
+      return out;
+    }
+
+    refresh(true);
+    if (!DEMO) setInterval(refresh, REFRESH_MS);
+  </script>
+</body>
+</html>
