@@ -9,8 +9,8 @@ const NOT_READY = !GAS_URL && !IS_LOCAL;
 
 // ===== アンケート内容 =====
 const SURVEY = {
-  title: "糖活ぶっちゃけおしゃべり会 261025",
-  subtitle: "アンケート",
+  title: "糖活ぶっちゃけおしゃべり会",
+  subtitle: "糖活についてのアンケート",
   intro: "",
 };
 
