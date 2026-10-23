@@ -25,14 +25,14 @@ const TRIGGERS = [
   { label: "その他", detail: "具体的に" },
 ];
 
-// section: 1=全員 / 2=取り組んでいる方 / 3=まだの方 / 4=全員
+// section: 1=全員 / 2=エントリーしている方 / 3=エントリーしていない方 / 4=全員
 const QUESTIONS = [
   { id: "q1", no: 1, section: 1, type: "single", required: true,
-    text: "糖活に取り組んでいますか？",
-    options: ["取り組んでいる", "まだ取り組んでいない"] },
+    text: "糖活プログラムにエントリーしていますか？",
+    options: ["エントリーしている", "エントリーしていない"] },
 
   { id: "q2", no: 2, section: 2, type: "single", required: true,
-    text: "糖活に取り組み始めてどれくらいですか？",
+    text: "エントリーしてどれくらい経ちますか？",
     options: ["1ヶ月未満", "1〜3ヶ月", "3〜6ヶ月", "半年〜1年", "1年以上"] },
   { id: "q3", no: 3, section: 2, type: "multi",
     text: "糖活を始めたきっかけを教えてください。", options: TRIGGERS },
@@ -80,7 +80,7 @@ const QUESTIONS = [
     text: "ひとことメッセージをどうぞ。" },
 ];
 
-const SECTION_NAMES = { 1: "全員", 2: "取り組んでいる方", 3: "まだ取り組んでいない方", 4: "全員" };
+const SECTION_NAMES = { 1: "全員", 2: "エントリーしている方", 3: "エントリーしていない方", 4: "全員" };
 
 // ===== 共通ヘルパー =====
 function optLabel(o) { return typeof o === "string" ? o : o.label; }

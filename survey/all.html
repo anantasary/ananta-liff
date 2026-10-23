@@ -103,8 +103,8 @@
 
   <div class="controls">
     <div class="tabs" role="tablist">
-      <button class="tab" role="tab" data-g="2" id="tab2">取り組んでいる方<b id="c2">0</b></button>
-      <button class="tab s3" role="tab" data-g="3" id="tab3">まだ取り組んでいない方<b id="c3">0</b></button>
+      <button class="tab" role="tab" data-g="2" id="tab2">エントリーしている方<b id="c2">0</b></button>
+      <button class="tab s3" role="tab" data-g="3" id="tab3">エントリーしていない方<b id="c3">0</b></button>
     </div>
     <div class="views">
       <button class="view" data-v="q">質問ごと</button>
@@ -118,7 +118,7 @@
     const params = new URLSearchParams(location.search);
     const DEMO = params.has("demo");
     const REFRESH_MS = 10000;
-    const GROUPS = { 2: "取り組んでいる", 3: "まだ取り組んでいない" };
+    const GROUPS = { 2: "エントリーしている", 3: "エントリーしていない" };
 
     let group = params.get("g") === "3" ? 3 : 2;
     let view = params.get("v") === "p" ? "p" : "q";
@@ -237,7 +237,7 @@
       const out = [];
       for (let i = 0; i < 12; i++) {
         const doing = i % 3 !== 0;
-        const a = { q1: doing ? "取り組んでいる" : "まだ取り組んでいない" };
+        const a = { q1: doing ? "エントリーしている" : "エントリーしていない" };
         if (doing) {
           a.q2 = optLabel(q("q2").options[i % 5]);
           a.q3 = { sel: pick(q("q3").options.slice(i % 4), 2), notes: {} };

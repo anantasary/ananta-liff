@@ -69,7 +69,7 @@
 
     function currentSection() {
       if (step === 0) return 1;
-      if (step === 1) return answers.q1 === "取り組んでいる" ? 2 : 3;
+      if (step === 1) return answers.q1 === "エントリーしている" ? 2 : 3;
       return 4;
     }
 
@@ -169,7 +169,7 @@
       if (step < 2) { step++; render(); window.scrollTo(0, 0); return; }
 
       // 送信：通らなかった側のセクションの回答は捨てる
-      const skip = answers.q1 === "取り組んでいる" ? 3 : 2;
+      const skip = answers.q1 === "エントリーしている" ? 3 : 2;
       const final = {};
       QUESTIONS.forEach((q) => { if (q.section !== skip && answers[q.id] != null) final[q.id] = answers[q.id]; });
       const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);

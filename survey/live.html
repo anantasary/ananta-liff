@@ -128,7 +128,7 @@
 
     function renderHome() {
       const total = responses.length;
-      const yes = responses.filter((r) => r.answers.q1 === "取り組んでいる").length;
+      const yes = responses.filter((r) => r.answers.q1 === "エントリーしている").length;
       const today = new Date().toDateString();
       const todayCount = responses.filter((r) => r.t && new Date(r.t).toDateString() === today).length;
       $("slide").innerHTML = `<div class="welcome"><div>
@@ -137,8 +137,8 @@
           <div class="big">${total}<small>件の回答</small></div>
           <div class="today">事前の回答 ${total - todayCount}件 ＋ 今日の回答 <b>${todayCount}</b>件</div>
           <div class="split">
-            <div class="pill">取り組んでいる<b>${yes}</b></div>
-            <div class="pill s3">まだ取り組んでいない<b>${total - yes}</b></div>
+            <div class="pill">エントリーしている<b>${yes}</b></div>
+            <div class="pill s3">エントリーしていない<b>${total - yes}</b></div>
           </div></div>
         <div class="qr"><div id="qrcode"></div><p>スマホで読み取って回答</p><div class="url">${esc(FORM_URL)}</div></div>
       </div>`;
@@ -147,8 +147,8 @@
 
     function renderQuestion(q, animate) {
       const sectionResp = responses.filter((r) => {
-        if (q.section === 2) return r.answers.q1 === "取り組んでいる";
-        if (q.section === 3) return r.answers.q1 === "まだ取り組んでいない";
+        if (q.section === 2) return r.answers.q1 === "エントリーしている";
+        if (q.section === 3) return r.answers.q1 === "エントリーしていない";
         return true;
       });
       const answered = sectionResp.filter((r) => r.answers[q.id] != null);
@@ -186,7 +186,7 @@
           // 新しい回答が上に来るように
           const list = answered.slice().reverse();
           html += `<div class="cards">` + list.map((r) => {
-            const tag = q.section === 4 ? (r.answers.q1 === "取り組んでいる" ? "取り組んでいる方" : "まだ取り組んでいない方") : "";
+            const tag = q.section === 4 ? (r.answers.q1 === "エントリーしている" ? "エントリーしている方" : "エントリーしていない方") : "";
             return `<div class="card ${seen.has(r.id) ? "" : "new"}">${tag ? `<span class="tag">${tag}</span>` : ""}${esc(r.answers[q.id])}</div>`;
           }).join("") + `</div>`;
         }
@@ -225,7 +225,7 @@
       const out = [];
       for (let i = 0; i < 12; i++) {
         const doing = i % 3 !== 0;
-        const a = { q1: doing ? "取り組んでいる" : "まだ取り組んでいない" };
+        const a = { q1: doing ? "エントリーしている" : "エントリーしていない" };
         if (doing) {
           a.q2 = optLabel(q("q2").options[i % 5]);
           a.q3 = { sel: pick(q("q3").options.slice(0, 6), 2), notes: {} };
