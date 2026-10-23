@@ -36,6 +36,15 @@
     .views { display: flex; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 4px; }
     .view { font: inherit; font-size: 14px; font-weight: 700; padding: 8px 14px; border: 0; border-radius: 9px; background: transparent; color: var(--sub); cursor: pointer; }
     .view[aria-pressed="true"] { background: var(--pale); color: #3b5a5a; }
+    .tools { max-width: 1200px; margin: 0 auto; padding: 14px 5vw 0; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .tools .lbl { font-size: 13px; font-weight: 700; color: var(--sub); }
+    .tools select { font: inherit; font-size: 14px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: #fff; color: var(--text); max-width: 100%; }
+    .tools select:disabled { color: #b6c4c4; }
+    .tools .gap { width: 14px; }
+    .clear { font: inherit; font-size: 13px; font-weight: 700; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: #fff; color: var(--sub); cursor: pointer; }
+    .fnote { max-width: 1200px; margin: 12px auto 0; padding: 0 5vw; }
+    .fnote div { background: #fff6e0; color: #6b5300; border-radius: 12px; padding: 10px 16px; font-size: 15px; }
+    .fnote b { font-size: 18px; }
 
     main { max-width: 1200px; margin: 0 auto; padding: 20px 5vw 64px; }
     .q { background: #fff; border-radius: 20px; padding: 26px 28px; margin-top: 18px; border: 1px solid var(--line); }
@@ -115,6 +124,8 @@
       <button class="view" data-v="p">1人ずつ</button>
     </div>
   </div>
+  <div class="tools" id="tools"></div>
+  <div class="fnote" id="fnote"></div>
   <main id="body"></main>
 
   <script src="questions.js"></script>
@@ -126,6 +137,10 @@
 
     let group = params.get("g") === "3" ? 3 : 2;
     let view = params.get("v") === "p" ? "p" : "q";
+    // 絞り込み（質問ID・答え）と並べ替え
+    let fq = params.get("fq") || "";
+    let fo = params.get("fo") || "";
+    let sortBy = params.get("s") || "new";
     let responses = [];
     let lastSig = "";
 
@@ -138,8 +153,12 @@
 
     function setState(g, v) {
       group = g; view = v;
+      if (fq && !choiceQuestions(group).some((q) => q.id === fq)) { fq = ""; fo = ""; }
       const p = new URLSearchParams(location.search);
       p.set("g", g); p.set("v", v);
+      fq ? p.set("fq", fq) : p.delete("fq");
+      fo ? p.set("fo", fo) : p.delete("fo");
+      sortBy !== "new" ? p.set("s", sortBy) : p.delete("s");
       history.replaceState(null, "", "?" + p.toString());
       render();
     }
@@ -149,6 +168,53 @@
     // そのグループに見せる質問（Q1は振り分け用なので除く）
     function groupQuestions(g) { return QUESTIONS.filter((q) => q.section === g || q.section === 4); }
     function groupResponses(g) { return responses.filter((r) => r.answers.q1 === GROUPS[g]); }
+    function choiceQuestions(g) { return groupQuestions(g).filter((q) => q.type === "single" || q.type === "multi"); }
+
+    function picked(q, a, label) {
+      if (a == null) return false;
+      return q.type === "single" ? a === label : a.sel.includes(label);
+    }
+    function applyFilter(list) {
+      const q = QUESTIONS.find((x) => x.id === fq);
+      if (!q || !fo) return list;
+      return list.filter((r) => picked(q, r.answers[q.id], fo));
+    }
+
+    // 並べ替え：回答の新しい順・古い順、エントリー期間（Q2）の短い順・長い順
+    const SORTS = { new: "回答が新しい順", old: "回答が古い順", short: "エントリー期間が短い順", long: "エントリー期間が長い順" };
+    const Q2_ORDER = QUESTIONS.find((q) => q.id === "q2").options.map(optLabel);
+    function sortPeople(list) {
+      const out = list.slice();
+      if (sortBy === "old") return out;
+      if ((sortBy === "short" || sortBy === "long") && group === 2) {
+        const rank = (r) => { const i = Q2_ORDER.indexOf(r.answers.q2); return i < 0 ? 99 : i; };
+        return out.sort((a, b) => (sortBy === "short" ? rank(a) - rank(b) : rank(b) - rank(a)));
+      }
+      return out.reverse();
+    }
+
+    function renderTools() {
+      const qs = choiceQuestions(group);
+      const q = qs.find((x) => x.id === fq);
+      let html = `<span class="lbl">絞り込み</span>
+        <select id="fq"><option value="">質問を選ぶ</option>${qs.map((x) =>
+          `<option value="${x.id}"${x.id === fq ? " selected" : ""}>Q${x.no} ${esc(x.text)}</option>`).join("")}</select>
+        <select id="fo"${q ? "" : " disabled"}><option value="">答えを選ぶ</option>${q ? q.options.map((o) => {
+          const l = optLabel(o);
+          return `<option value="${esc(l)}"${l === fo ? " selected" : ""}>${esc(l)}</option>`;
+        }).join("") : ""}</select>`;
+      if (fq) html += `<button class="clear" id="fclear">解除</button>`;
+      if (view === "p") {
+        const keys = Object.keys(SORTS).filter((k) => group === 2 || (k !== "short" && k !== "long"));
+        html += `<span class="gap"></span><span class="lbl">並べ替え</span>
+          <select id="sort">${keys.map((k) => `<option value="${k}"${k === sortBy ? " selected" : ""}>${SORTS[k]}</option>`).join("")}</select>`;
+      }
+      $("tools").innerHTML = html;
+      $("fq").onchange = (e) => { fq = e.target.value; fo = ""; setState(group, view); };
+      $("fo").onchange = (e) => { fo = e.target.value; setState(group, view); };
+      if ($("fclear")) $("fclear").onclick = () => { fq = ""; fo = ""; setState(group, view); };
+      if ($("sort")) $("sort").onchange = (e) => { sortBy = e.target.value; setState(group, view); };
+    }
 
     function renderQuestion(q, list) {
       const answered = list.filter((r) => r.answers[q.id] != null);
@@ -200,11 +266,10 @@
       return isNaN(d) ? "" : d.toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
     }
 
-    function renderPeople(qs, list) {
-      if (!list.length) return `<section class="q"><div class="empty">まだ回答はありません</div></section>`;
-      const total = list.length;
-      return `<div class="people">` + list.slice().reverse().map((r, i) => `<article class="person">
-          <div class="who"><b>${total - i}人目</b><span>${r.t ? esc(fmtTime(r.t)) : ""}</span></div>
+    function renderPeople(qs, list, numOf) {
+      if (!list.length) return `<section class="q"><div class="empty">${fo ? "あてはまる回答はありません" : "まだ回答はありません"}</div></section>`;
+      return `<div class="people">` + sortPeople(list).map((r) => `<article class="person">
+          <div class="who"><b>${numOf.get(r.id)}人目</b><span>${r.t ? esc(fmtTime(r.t)) : ""}</span></div>
           <dl>${qs.map((q) => `<dt>Q${q.no} ${esc(q.text)}</dt><dd>${answerHtml(q, r.answers[q.id])}</dd>`).join("")}</dl>
         </article>`).join("") + `</div>`;
     }
@@ -216,9 +281,15 @@
       document.querySelectorAll(".tab").forEach((b) => b.setAttribute("aria-selected", String(+b.dataset.g === group)));
       document.querySelectorAll(".view").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.v === view)));
       const qs = groupQuestions(group);
-      const list = groupResponses(group);
+      const all = groupResponses(group);
+      const numOf = new Map(all.map((r, i) => [r.id, i + 1]));
+      const list = applyFilter(all);
+      renderTools();
+      const fqq = QUESTIONS.find((x) => x.id === fq);
+      $("fnote").innerHTML = fqq && fo
+        ? `<div>Q${fqq.no}で「${esc(fo)}」を選んだ人だけを表示中：<b>${list.length}</b>人（${all.length}人中）</div>` : "";
       $("body").className = group === 3 ? "s3" : "";
-      $("body").innerHTML = view === "p" ? renderPeople(qs, list) : qs.map((q) => renderQuestion(q, list)).join("");
+      $("body").innerHTML = view === "p" ? renderPeople(qs, list, numOf) : qs.map((q) => renderQuestion(q, list)).join("");
     }
 
     async function refresh(first) {
@@ -249,6 +320,7 @@
           a.q5 = texts[i % 2]; a.q6 = texts[2 + (i % 2)];
           a.q7 = { sel: pick(q("q7").options.slice(i % 8), 3), notes: i === 1 ? { "数値が改善した": "HbA1c" } : {} };
           if (i === 1) a.q7.sel.push("数値が改善した");
+          if (i % 4 === 2) a.q7 = { sel: ["まだ変化は感じていない"], notes: {} };
           a.q8 = "体が軽い毎日を過ごしたい";
         } else {
           a.q9 = { sel: pick(q("q9").options.slice(i % 4), 2), notes: {} };
