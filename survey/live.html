@@ -109,6 +109,7 @@
 
     $("jump").innerHTML = SLIDES.map((s, i) => `<option value="${i}">${esc(s.label)}</option>`).join("");
     if (DEMO) $("mode").innerHTML = `<span class="demo">デモ表示（サンプルデータ）</span>`;
+    else if (NOT_READY) $("mode").innerHTML = `<span class="err">保存先が未設定です（questions.js の GAS_URL）</span>`;
     else if (!GAS_URL) $("mode").innerHTML = `<span class="demo">お試しモード（この端末の回答のみ）</span>`;
 
     function go(i) {
@@ -244,8 +245,8 @@
       return out;
     }
 
-    refresh(true);
-    if (!DEMO) setInterval(refresh, REFRESH_MS);
+    if (NOT_READY && !DEMO) { responses = []; render(true); }
+    else { refresh(true); if (!DEMO) setInterval(refresh, REFRESH_MS); }
   </script>
 </body>
 </html>

@@ -3,6 +3,10 @@
 // 空のままだと「お試しモード」（このブラウザの中だけに保存）で動きます。
 const GAS_URL = "";
 
+// 自分のパソコンで試すときだけ「お試しモード」。公開先で未設定なら「準備中」になります。
+const IS_LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+const NOT_READY = !GAS_URL && !IS_LOCAL;
+
 // ===== アンケート内容 =====
 const SURVEY = {
   title: "糖活ぶっちゃけおしゃべり会",

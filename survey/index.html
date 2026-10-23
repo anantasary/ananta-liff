@@ -65,7 +65,7 @@
     document.getElementById("title").textContent = SURVEY.title;
     document.getElementById("subtitle").textContent = SURVEY.subtitle;
     document.title = SURVEY.title + " " + SURVEY.subtitle;
-    if (!GAS_URL) document.getElementById("demo").hidden = false;
+    if (!GAS_URL && IS_LOCAL) document.getElementById("demo").hidden = false;
 
     function currentSection() {
       if (step === 0) return 1;
@@ -187,7 +187,11 @@
     }
 
     try { if (localStorage.getItem("toukatsu_survey_done")) step = -1; } catch (e) {}
-    render();
+    if (NOT_READY) {
+      app.innerHTML = `<div class="done"><div class="icon">🌱</div><h2>ただいま準備中です</h2><p>もう少しだけお待ちください。</p></div>`;
+    } else {
+      render();
+    }
   </script>
 </body>
 </html>
