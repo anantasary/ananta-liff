@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>糖活アンケート ライブ集計</title>
-  <link href="https://fonts.googleapis.com/css2?family=Arizonia&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     :root { --main: #00C2C3; --soft: #81D8D0; --bg: #f0f9f9; --pale: #f0fdfd; --line: #e0f2f2; --text: #2f3b3b; --sub: #708090; --accent: #f29e6b; }
     * { box-sizing: border-box; }
     html, body { margin: 0; height: 100%; }
     body { font-family: "Noto Sans JP", "Helvetica Neue", Arial, sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; }
     header { display: flex; align-items: center; gap: 14px; padding: 12px 20px; background: #fff; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
-    .logo { font-family: 'Arizonia', cursive; font-size: 30px; color: var(--sub); line-height: 1; }
+    .logo { height: 34px; width: auto; display: block; }
     .ttl { font-weight: 700; font-size: 16px; }
     .spacer { flex: 1; }
     .live { font-size: 13px; color: var(--sub); display: flex; align-items: center; gap: 6px; }
@@ -74,7 +74,7 @@
 </head>
 <body>
   <header>
-    <span class="logo">Ananta</span>
+    <img class="logo" src="ananta-logo.png" alt="Ananta">
     <span class="ttl">ライブ集計</span>
     <span id="mode"></span>
     <span class="spacer"></span>
