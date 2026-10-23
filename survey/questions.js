@@ -1,7 +1,7 @@
 // ===== 設定 =====
 // Google Apps Script の「ウェブアプリURL」をここに貼り付けます。
 // 空のままだと「お試しモード」（このブラウザの中だけに保存）で動きます。
-const GAS_URL = "";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx7gWIbIgtMeudi9e7GULR42vTdn3FqMvX2KBSt-CK1Nur2xsJQ71MAGrb9QCfk_NZ-/exec";
 
 // 自分のパソコンで試すときだけ「お試しモード」。公開先で未設定なら「準備中」になります。
 const IS_LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
