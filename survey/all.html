@@ -13,6 +13,10 @@
     header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 14px; padding: 12px 20px; background: #fff; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
     .logo { height: 34px; width: auto; display: block; }
     .ttl { font-weight: 700; font-size: 16px; }
+    .pages { display: flex; gap: 4px; background: var(--pale); border: 1px solid var(--line); border-radius: 12px; padding: 4px; }
+    .pages a { font-size: 14px; font-weight: 700; padding: 7px 14px; border-radius: 9px; color: var(--sub); text-decoration: none; white-space: nowrap; }
+    .pages a:hover { color: #3b5a5a; }
+    .pages a[aria-current="page"] { background: var(--main); color: #fff; }
     .spacer { flex: 1; }
     .live { font-size: 13px; color: var(--sub); display: flex; align-items: center; gap: 6px; }
     .dot { width: 9px; height: 9px; border-radius: 50%; background: #2bc47d; animation: pulse 2s infinite; }
@@ -94,7 +98,7 @@
 <body>
   <header>
     <img class="logo" src="ananta-logo.png" alt="Ananta">
-    <span class="ttl">回答一覧</span>
+    <nav class="pages" aria-label="表示の切り替え"><a href="live.html">ライブ集計</a><a href="all.html" aria-current="page">回答一覧</a></nav>
     <span id="mode"></span>
     <span class="spacer"></span>
     <span class="live"><span class="dot" id="dot"></span><span id="updated">接続中…</span></span>
