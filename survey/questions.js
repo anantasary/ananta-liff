@@ -72,8 +72,8 @@ const QUESTIONS = [
   { id: "q11", no: 11, section: 3, type: "text",
     text: "糖活について知りたいこと・不安に思っていることはありますか？" },
 
-  { id: "q12", no: 12, section: 4, type: "text", required: true,
-    text: "おしゃべり会でいちばん話したいこと・聞きたいことは何ですか？" },
+  { id: "q12", no: 12, section: 4, type: "text",
+    text: "糖活について、いちばん気になっているテーマは何ですか？" },
   { id: "q13", no: 13, section: 4, type: "text",
     text: "ほかの参加者に聞いてみたいことはありますか？" },
   { id: "q14", no: 14, section: 4, type: "text",
