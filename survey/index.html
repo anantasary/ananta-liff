@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>糖活ぶっちゃけおしゃべり会 事前アンケート</title>
+  <title>糖活ぶっちゃけおしゃべり会 261025 アンケート</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root { --main: #00C2C3; --soft: #81D8D0; --bg: #f0f9f9; --pale: #f0fdfd; --line: #e0f2f2; --text: #333; --sub: #708090; }
@@ -78,21 +78,20 @@
     function render() {
       if (step === -1) {
         app.innerHTML = `<div class="done"><div class="icon">✅</div><h2>この端末からは回答済みです</h2>
-          <p>ご協力ありがとうございました。<br>おしゃべり会でお会いしましょう！</p>
+          <p>ご協力ありがとうございました。</p>
           <div class="nav"><button class="btn-sub" id="again">別の人として回答する</button></div></div>`;
         document.getElementById("again").onclick = () => { step = 0; render(); };
         return;
       }
       if (step === 3) {
-        app.innerHTML = `<div class="done"><div class="icon">🌿</div><h2>ご回答ありがとうございました！</h2>
-          <p>おしゃべり会でお会いできるのを<br>楽しみにしています。</p></div>`;
+        app.innerHTML = `<div class="done"><div class="icon">🌿</div><h2>ご回答ありがとうございました！</h2></div>`;
         window.scrollTo(0, 0);
         return;
       }
       const sec = currentSection();
       const qs = QUESTIONS.filter((q) => q.section === sec);
       let html = "";
-      if (step === 0) html += `<div class="intro">${esc(SURVEY.intro)}</div>`;
+      if (step === 0 && SURVEY.intro) html += `<div class="intro">${esc(SURVEY.intro)}</div>`;
       html += `<div class="progress"><div style="width:${((step + 1) / 3) * 100}%"></div></div>`;
       html += `<div class="sec-name">${step + 1} / 3 ページ（${SECTION_NAMES[sec]}）</div>`;
       qs.forEach((q) => {
