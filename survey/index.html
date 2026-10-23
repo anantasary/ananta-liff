@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>糖活ぶっちゃけおしゃべり会 事前アンケート</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --main: #00C2C3; --soft: #81D8D0; --bg: #f0f9f9; --pale: #f0fdfd; --line: #e0f2f2; --text: #333; --sub: #708090; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 24px 16px 60px; font-family: "Noto Sans JP", "Helvetica Neue", Arial, sans-serif; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.7; }
+    .container { max-width: 520px; margin: 0 auto; background: #fff; padding: 32px 22px; border-radius: 24px; box-shadow: 0 15px 40px rgba(0,194,195,.08); border: 1px solid var(--line); }
+    .brand { text-align: center; margin-bottom: 20px; }
+    .brand .logo { display: block; width: 180px; max-width: 60%; height: auto; margin: 0 auto 6px; }
+    .brand h1 { font-size: 19px; margin: 8px 0 0; color: #3b5a5a; }
+    .brand .sub { font-size: 13px; color: var(--sub); letter-spacing: .15em; }
+    .intro { background: var(--pale); border-radius: 14px; padding: 16px; font-size: 14px; white-space: pre-wrap; margin-bottom: 24px; }
+    .progress { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+    .progress div { height: 100%; background: linear-gradient(90deg, var(--soft), var(--main)); transition: width .3s; }
+    .sec-name { font-size: 12px; color: var(--sub); margin-bottom: 18px; }
+    .q { margin-bottom: 30px; }
+    .q-title { font-weight: 700; margin-bottom: 4px; }
+    .q-title .no { color: var(--main); margin-right: 4px; }
+    .badge { display: inline-block; font-size: 11px; padding: 1px 8px; border-radius: 10px; margin-left: 6px; vertical-align: 2px; font-weight: 700; }
+    .badge.req { background: #ffe9ec; color: #d6455d; }
+    .badge.any { background: #eef3f3; color: #8aa; }
+    .hint { font-size: 12px; color: #88aaaa; margin-bottom: 10px; }
+    .opt { display: flex; align-items: center; gap: 10px; padding: 13px 14px; margin-bottom: 8px; background: var(--pale); border: 2px solid transparent; border-radius: 12px; cursor: pointer; font-size: 15px; transition: .15s; }
+    .opt:has(input:checked) { border-color: var(--main); background: #fff; box-shadow: 0 4px 12px rgba(0,194,195,.1); }
+    .opt input { accent-color: var(--main); transform: scale(1.25); flex-shrink: 0; margin: 0; }
+    .detail { display: none; margin: -2px 0 10px 32px; }
+    .detail.show { display: block; }
+    input[type=text], textarea { width: 100%; font: inherit; font-size: 16px; padding: 12px 14px; border: 2px solid var(--line); border-radius: 10px; background: #fdfdfd; }
+    textarea { min-height: 96px; resize: vertical; }
+    input[type=text]:focus, textarea:focus { outline: none; border-color: var(--main); background: #fff; }
+    .err { color: #d6455d; font-size: 13px; margin-top: 6px; display: none; }
+    .q.invalid .err { display: block; }
+    .nav { display: flex; gap: 10px; margin-top: 10px; }
+    button { font: inherit; font-size: 16px; font-weight: 700; padding: 16px; cursor: pointer; border: none; border-radius: 50px; letter-spacing: .08em; }
+    .btn-main { flex: 2; background: linear-gradient(135deg, var(--soft), var(--main)); color: #fff; box-shadow: 0 8px 20px rgba(0,194,195,.25); }
+    .btn-sub { flex: 1; background: #f0f0f0; color: #888; }
+    button:disabled { opacity: .6; cursor: default; }
+    .done { text-align: center; padding: 30px 0 10px; }
+    .done .icon { font-size: 52px; }
+    .done h2 { font-size: 20px; color: #3b5a5a; }
+    .demo { background: #fff6e0; color: #8a6a00; font-size: 12px; padding: 8px 12px; border-radius: 10px; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="brand">
+      <img class="logo" src="ananta-logo.png" alt="Ananta">
+      <h1 id="title"></h1>
+      <div class="sub" id="subtitle"></div>
+    </div>
+    <div id="demo" class="demo" hidden>お試しモード：回答はこの端末の中だけに保存されます（questions.js に保存先URLを設定すると本番になります）</div>
+    <div id="app"></div>
+  </div>
+
+  <script src="questions.js"></script>
+  <script>
+    const answers = {};
+    let step = 0; // 0: セクション1, 1: セクション2 or 3, 2: セクション4, 3: 完了
+    const app = document.getElementById("app");
+    document.getElementById("title").textContent = SURVEY.title;
+    document.getElementById("subtitle").textContent = SURVEY.subtitle;
+    document.title = SURVEY.title + " " + SURVEY.subtitle;
+    if (!GAS_URL && IS_LOCAL) document.getElementById("demo").hidden = false;
+
+    function currentSection() {
+      if (step === 0) return 1;
+      if (step === 1) return answers.q1 === "取り組んでいる" ? 2 : 3;
+      return 4;
+    }
+
+    function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+    function render() {
+      if (step === -1) {
+        app.innerHTML = `<div class="done"><div class="icon">✅</div><h2>この端末からは回答済みです</h2>
+          <p>ご協力ありがとうございました。<br>おしゃべり会でお会いしましょう！</p>
+          <div class="nav"><button class="btn-sub" id="again">別の人として回答する</button></div></div>`;
+        document.getElementById("again").onclick = () => { step = 0; render(); };
+        return;
+      }
+      if (step === 3) {
+        app.innerHTML = `<div class="done"><div class="icon">🌿</div><h2>ご回答ありがとうございました！</h2>
+          <p>おしゃべり会でお会いできるのを<br>楽しみにしています。</p></div>`;
+        window.scrollTo(0, 0);
+        return;
+      }
+      const sec = currentSection();
+      const qs = QUESTIONS.filter((q) => q.section === sec);
+      let html = "";
+      if (step === 0) html += `<div class="intro">${esc(SURVEY.intro)}</div>`;
+      html += `<div class="progress"><div style="width:${((step + 1) / 3) * 100}%"></div></div>`;
+      html += `<div class="sec-name">${step + 1} / 3 ページ（${SECTION_NAMES[sec]}）</div>`;
+      qs.forEach((q) => {
+        html += `<div class="q" data-q="${q.id}">
+          <div class="q-title"><span class="no">Q${q.no}.</span>${esc(q.text)}
+          <span class="badge ${q.required ? "req" : "any"}">${q.required ? "必須" : "任意"}</span></div>`;
+        if (q.type === "multi") html += `<div class="hint">あてはまるものをすべて選んでください</div>`;
+        if (q.type === "single" || q.type === "multi") {
+          const inputType = q.type === "single" ? "radio" : "checkbox";
+          q.options.forEach((o, i) => {
+            const label = optLabel(o), detail = optDetail(o);
+            const cur = answers[q.id];
+            const checked = q.type === "single" ? cur === label : cur && cur.sel.includes(label);
+            const note = q.type === "multi" && cur && cur.notes ? cur.notes[label] || "" : "";
+            html += `<label class="opt"><input type="${inputType}" name="${q.id}" value="${esc(label)}" ${checked ? "checked" : ""}
+              data-i="${i}"><span>${esc(label)}${detail ? "（" + esc(detail) + "）" : ""}</span></label>`;
+            if (detail) html += `<div class="detail ${checked ? "show" : ""}" data-detail="${q.id}-${i}">
+              <input type="text" placeholder="${esc(detail)}を入力" value="${esc(note)}"></div>`;
+          });
+        } else {
+          html += `<textarea name="${q.id}" placeholder="自由にお書きください">${esc(answers[q.id] || "")}</textarea>`;
+        }
+        html += `<div class="err">この質問は必須です</div></div>`;
+      });
+      html += `<div class="nav">`;
+      if (step > 0) html += `<button class="btn-sub" id="back">戻る</button>`;
+      html += `<button class="btn-main" id="next">${step === 2 ? "送信する" : "次へ"}</button></div>`;
+      app.innerHTML = html;
+
+      app.querySelectorAll("input[type=checkbox], input[type=radio]").forEach((el) => {
+        el.addEventListener("change", () => {
+          const d = app.querySelector(`[data-detail="${el.name}-${el.dataset.i}"]`);
+          if (d) d.classList.toggle("show", el.checked);
+          if (el.checked) el.closest(".q").classList.remove("invalid");
+        });
+      });
+      if (step > 0) document.getElementById("back").onclick = () => { collect(); step--; render(); window.scrollTo(0, 0); };
+      document.getElementById("next").onclick = next;
+    }
+
+    function collect() {
+      QUESTIONS.filter((q) => q.section === currentSection()).forEach((q) => {
+        const box = app.querySelector(`[data-q="${q.id}"]`);
+        if (q.type === "single") {
+          const c = box.querySelector("input:checked");
+          if (c) answers[q.id] = c.value; else delete answers[q.id];
+        } else if (q.type === "multi") {
+          const sel = [], notes = {};
+          box.querySelectorAll("input[type=checkbox]:checked").forEach((c) => {
+            sel.push(c.value);
+            const d = box.querySelector(`[data-detail="${q.id}-${c.dataset.i}"] input`);
+            if (d && d.value.trim()) notes[c.value] = d.value.trim();
+          });
+          if (sel.length) answers[q.id] = { sel, notes }; else delete answers[q.id];
+        } else {
+          const v = box.querySelector("textarea").value.trim();
+          if (v) answers[q.id] = v; else delete answers[q.id];
+        }
+      });
+    }
+
+    async function next() {
+      collect();
+      const sec = currentSection();
+      let firstBad = null;
+      QUESTIONS.filter((q) => q.section === sec).forEach((q) => {
+        const box = app.querySelector(`[data-q="${q.id}"]`);
+        const bad = q.required && answers[q.id] == null;
+        box.classList.toggle("invalid", bad);
+        if (bad && !firstBad) firstBad = box;
+      });
+      if (firstBad) { firstBad.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+
+      if (step < 2) { step++; render(); window.scrollTo(0, 0); return; }
+
+      // 送信：通らなかった側のセクションの回答は捨てる
+      const skip = answers.q1 === "取り組んでいる" ? 3 : 2;
+      const final = {};
+      QUESTIONS.forEach((q) => { if (q.section !== skip && answers[q.id] != null) final[q.id] = answers[q.id]; });
+      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+      const { headers, row } = toRow(final);
+      const btn = document.getElementById("next");
+      btn.disabled = true; btn.textContent = "送信中…";
+      try {
+        await saveResponse({ id, answers: final, headers, row, t: new Date().toISOString() });
+        try { localStorage.setItem("toukatsu_survey_done", "1"); } catch (e) {}
+        step = 3; render();
+      } catch (e) {
+        alert("送信できませんでした。電波の良いところでもう一度お試しください。");
+        btn.disabled = false; btn.textContent = "送信する";
+      }
+    }
+
+    try { if (localStorage.getItem("toukatsu_survey_done")) step = -1; } catch (e) {}
+    if (NOT_READY) {
+      app.innerHTML = `<div class="done"><div class="icon">🌱</div><h2>ただいま準備中です</h2><p>もう少しだけお待ちください。</p></div>`;
+    } else {
+      render();
+    }
+  </script>
+</body>
+</html>
