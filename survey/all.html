@@ -36,8 +36,10 @@
     .views { display: flex; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 4px; }
     .view { font: inherit; font-size: 14px; font-weight: 700; padding: 8px 14px; border: 0; border-radius: 9px; background: transparent; color: var(--sub); cursor: pointer; }
     .view[aria-pressed="true"] { background: var(--pale); color: #3b5a5a; }
-    .tools { max-width: 1200px; margin: 0 auto; padding: 14px 5vw 0; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-    .tools .lbl { font-size: 13px; font-weight: 700; color: var(--sub); }
+    .tools { max-width: 1200px; margin: 0 auto; padding: 14px 5vw 0; display: flex; flex-direction: column; gap: 8px; }
+    .frow { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .tools .lbl { font-size: 13px; font-weight: 700; color: var(--sub); min-width: 4.5em; }
+    .add { font: inherit; font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 10px; border: 1px dashed var(--soft); background: transparent; color: var(--main); cursor: pointer; }
     .tools select { font: inherit; font-size: 14px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: #fff; color: var(--text); max-width: 100%; }
     .tools select:disabled { color: #b6c4c4; }
     .tools .gap { width: 14px; }
@@ -137,9 +139,11 @@
 
     let group = params.get("g") === "3" ? 3 : 2;
     let view = params.get("v") === "p" ? "p" : "q";
-    // 絞り込み（質問ID・答え）と並べ替え
-    let fq = params.get("fq") || "";
-    let fo = params.get("fo") || "";
+    // 絞り込み条件（すべて満たす人だけ表示）と並べ替え。URLでは f=q7~答え|q4~答え
+    let conds = (params.get("f") || "").split("|").filter(Boolean).map((x) => {
+      const i = x.indexOf("~");
+      return i < 0 ? { q: x, o: "" } : { q: x.slice(0, i), o: x.slice(i + 1) };
+    });
     let sortBy = params.get("s") || "new";
     let responses = [];
     let lastSig = "";
@@ -153,11 +157,12 @@
 
     function setState(g, v) {
       group = g; view = v;
-      if (fq && !choiceQuestions(group).some((q) => q.id === fq)) { fq = ""; fo = ""; }
+      const ok = new Set(choiceQuestions(group).map((q) => q.id));
+      conds = conds.filter((c) => !c.q || ok.has(c.q));
       const p = new URLSearchParams(location.search);
       p.set("g", g); p.set("v", v);
-      fq ? p.set("fq", fq) : p.delete("fq");
-      fo ? p.set("fo", fo) : p.delete("fo");
+      const f = conds.filter((c) => c.q).map((c) => c.q + "~" + c.o).join("|");
+      f ? p.set("f", f) : p.delete("f");
       sortBy !== "new" ? p.set("s", sortBy) : p.delete("s");
       history.replaceState(null, "", "?" + p.toString());
       render();
@@ -174,10 +179,12 @@
       if (a == null) return false;
       return q.type === "single" ? a === label : a.sel.includes(label);
     }
+    function activeConds() {
+      return conds.map((c) => ({ q: QUESTIONS.find((x) => x.id === c.q), o: c.o })).filter((c) => c.q && c.o);
+    }
     function applyFilter(list) {
-      const q = QUESTIONS.find((x) => x.id === fq);
-      if (!q || !fo) return list;
-      return list.filter((r) => picked(q, r.answers[q.id], fo));
+      const act = activeConds();
+      return list.filter((r) => act.every((c) => picked(c.q, r.answers[c.q.id], c.o)));
     }
 
     // 並べ替え：回答の新しい順・古い順、エントリー期間（Q2）の短い順・長い順
@@ -195,24 +202,32 @@
 
     function renderTools() {
       const qs = choiceQuestions(group);
-      const q = qs.find((x) => x.id === fq);
-      let html = `<span class="lbl">絞り込み</span>
-        <select id="fq"><option value="">質問を選ぶ</option>${qs.map((x) =>
-          `<option value="${x.id}"${x.id === fq ? " selected" : ""}>Q${x.no} ${esc(x.text)}</option>`).join("")}</select>
-        <select id="fo"${q ? "" : " disabled"}><option value="">答えを選ぶ</option>${q ? q.options.map((o) => {
-          const l = optLabel(o);
-          return `<option value="${esc(l)}"${l === fo ? " selected" : ""}>${esc(l)}</option>`;
-        }).join("") : ""}</select>`;
-      if (fq) html += `<button class="clear" id="fclear">解除</button>`;
+      const rows = conds.length ? conds : [{ q: "", o: "" }];
+      let html = rows.map((c, i) => {
+        const q = qs.find((x) => x.id === c.q);
+        return `<div class="frow"><span class="lbl">${i ? "かつ" : "絞り込み"}</span>
+          <select data-fq="${i}"><option value="">質問を選ぶ</option>${qs.map((x) =>
+            `<option value="${x.id}"${x.id === c.q ? " selected" : ""}>Q${x.no} ${esc(x.text)}</option>`).join("")}</select>
+          <select data-fo="${i}"${q ? "" : " disabled"}><option value="">答えを選ぶ</option>${q ? q.options.map((o) => {
+            const l = optLabel(o);
+            return `<option value="${esc(l)}"${l === c.o ? " selected" : ""}>${esc(l)}</option>`;
+          }).join("") : ""}</select>
+          ${c.q ? `<button class="clear" data-del="${i}">✕</button>` : ""}</div>`;
+      }).join("");
+      const last = rows[rows.length - 1];
+      if (last.q && last.o) html += `<div class="frow"><span class="lbl"></span><button class="add" id="fadd">＋ 条件を追加</button>${conds.length > 1 ? `<button class="clear" id="fclear">すべて解除</button>` : ""}</div>`;
       if (view === "p") {
         const keys = Object.keys(SORTS).filter((k) => group === 2 || (k !== "short" && k !== "long"));
-        html += `<span class="gap"></span><span class="lbl">並べ替え</span>
-          <select id="sort">${keys.map((k) => `<option value="${k}"${k === sortBy ? " selected" : ""}>${SORTS[k]}</option>`).join("")}</select>`;
+        html += `<div class="frow"><span class="lbl">並べ替え</span>
+          <select id="sort">${keys.map((k) => `<option value="${k}"${k === sortBy ? " selected" : ""}>${SORTS[k]}</option>`).join("")}</select></div>`;
       }
       $("tools").innerHTML = html;
-      $("fq").onchange = (e) => { fq = e.target.value; fo = ""; setState(group, view); };
-      $("fo").onchange = (e) => { fo = e.target.value; setState(group, view); };
-      if ($("fclear")) $("fclear").onclick = () => { fq = ""; fo = ""; setState(group, view); };
+      const edit = (i, patch) => { conds = rows.map((c) => ({ ...c })); Object.assign(conds[i], patch); setState(group, view); };
+      $("tools").querySelectorAll("[data-fq]").forEach((el) => (el.onchange = () => edit(+el.dataset.fq, { q: el.value, o: "" })));
+      $("tools").querySelectorAll("[data-fo]").forEach((el) => (el.onchange = () => edit(+el.dataset.fo, { o: el.value })));
+      $("tools").querySelectorAll("[data-del]").forEach((el) => (el.onclick = () => { conds = rows.filter((_, j) => j !== +el.dataset.del); setState(group, view); }));
+      if ($("fadd")) $("fadd").onclick = () => { conds = rows.concat([{ q: "", o: "" }]); render(); };
+      if ($("fclear")) $("fclear").onclick = () => { conds = []; setState(group, view); };
       if ($("sort")) $("sort").onchange = (e) => { sortBy = e.target.value; setState(group, view); };
     }
 
@@ -267,7 +282,7 @@
     }
 
     function renderPeople(qs, list, numOf) {
-      if (!list.length) return `<section class="q"><div class="empty">${fo ? "あてはまる回答はありません" : "まだ回答はありません"}</div></section>`;
+      if (!list.length) return `<section class="q"><div class="empty">${activeConds().length ? "あてはまる回答はありません" : "まだ回答はありません"}</div></section>`;
       return `<div class="people">` + sortPeople(list).map((r) => `<article class="person">
           <div class="who"><b>${numOf.get(r.id)}人目</b><span>${r.t ? esc(fmtTime(r.t)) : ""}</span></div>
           <dl>${qs.map((q) => `<dt>Q${q.no} ${esc(q.text)}</dt><dd>${answerHtml(q, r.answers[q.id])}</dd>`).join("")}</dl>
@@ -285,9 +300,9 @@
       const numOf = new Map(all.map((r, i) => [r.id, i + 1]));
       const list = applyFilter(all);
       renderTools();
-      const fqq = QUESTIONS.find((x) => x.id === fq);
-      $("fnote").innerHTML = fqq && fo
-        ? `<div>Q${fqq.no}で「${esc(fo)}」を選んだ人だけを表示中：<b>${list.length}</b>人（${all.length}人中）</div>` : "";
+      const act = activeConds();
+      $("fnote").innerHTML = act.length
+        ? `<div>${act.map((c) => `Q${c.q.no}で「${esc(c.o)}」`).join(" かつ ")}を選んだ人だけを表示中：<b>${list.length}</b>人（${all.length}人中）</div>` : "";
       $("body").className = group === 3 ? "s3" : "";
       $("body").innerHTML = view === "p" ? renderPeople(qs, list, numOf) : qs.map((q) => renderQuestion(q, list)).join("");
     }
