@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>糖活アンケート 一覧</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --main: #00C2C3; --soft: #81D8D0; --bg: #f0f9f9; --pale: #f0fdfd; --line: #e0f2f2; --text: #2f3b3b; --sub: #708090; --accent: #f29e6b; --accent-soft: #f7c59f; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body { font-family: "Noto Sans JP", "Helvetica Neue", Arial, sans-serif; background: var(--bg); color: var(--text); }
+    header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 14px; padding: 12px 20px; background: #fff; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+    .logo { height: 34px; width: auto; display: block; }
+    .ttl { font-weight: 700; font-size: 16px; }
+    .spacer { flex: 1; }
+    .live { font-size: 13px; color: var(--sub); display: flex; align-items: center; gap: 6px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: #2bc47d; animation: pulse 2s infinite; }
+    .dot.off { background: #d6455d; animation: none; }
+    @keyframes pulse { 50% { opacity: .3; } }
+    .count { background: var(--pale); border-radius: 30px; padding: 6px 16px; font-weight: 700; color: #3b5a5a; }
+    .count b { color: var(--main); font-size: 20px; }
+
+    .controls { max-width: 1200px; margin: 0 auto; padding: 24px 5vw 0; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+    .tabs { display: flex; gap: 10px; flex-wrap: wrap; }
+    .tab { font: inherit; font-size: 17px; font-weight: 700; padding: 12px 22px; border-radius: 16px; border: 2px solid var(--line); background: #fff; color: #3b5a5a; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+    .tab b { font-size: 22px; color: var(--main); }
+    .tab.s3 b { color: var(--accent); }
+    .tab[aria-selected="true"] { background: var(--main); border-color: var(--main); color: #fff; }
+    .tab.s3[aria-selected="true"] { background: var(--accent); border-color: var(--accent); }
+    .tab[aria-selected="true"] b { color: #fff; }
+    .views { display: flex; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 4px; }
+    .view { font: inherit; font-size: 14px; font-weight: 700; padding: 8px 14px; border: 0; border-radius: 9px; background: transparent; color: var(--sub); cursor: pointer; }
+    .view[aria-pressed="true"] { background: var(--pale); color: #3b5a5a; }
+
+    main { max-width: 1200px; margin: 0 auto; padding: 20px 5vw 64px; }
+    .q { background: #fff; border-radius: 20px; padding: 26px 28px; margin-top: 18px; border: 1px solid var(--line); }
+    .sec { display: inline-block; font-size: 13px; font-weight: 700; color: #fff; background: var(--main); padding: 3px 12px; border-radius: 20px; margin-bottom: 10px; }
+    .s3 .sec, .sec.s3 { background: var(--accent); }
+    .sec.all { background: #9fb3b3; }
+    h2 { font-size: clamp(19px, 2.2vw, 26px); margin: 0 0 4px; line-height: 1.45; }
+    h2 .no { color: var(--main); margin-right: 8px; }
+    .s3 h2 .no { color: var(--accent); }
+    .n { color: var(--sub); font-size: 14px; margin-bottom: 18px; }
+    .bars { display: flex; flex-direction: column; gap: 8px; }
+    .bar { display: grid; grid-template-columns: minmax(130px, 30%) 1fr 104px; align-items: center; gap: 14px; font-size: clamp(14px, 1.4vw, 18px); }
+    .bar .lbl { text-align: right; font-weight: 700; }
+    .track { background: var(--pale); border-radius: 8px; height: clamp(20px, 2.2vw, 28px); overflow: hidden; border: 1px solid var(--line); }
+    .fill { height: 100%; background: linear-gradient(90deg, var(--soft), var(--main)); border-radius: 8px; }
+    .s3 .fill { background: linear-gradient(90deg, var(--accent-soft), var(--accent)); }
+    .bar .val { font-weight: 900; color: #3b5a5a; }
+    .bar .val small { font-weight: 400; color: var(--sub); font-size: .78em; margin-left: 4px; }
+    .bar.zero { opacity: .45; }
+    .notes h3 { font-size: 14px; color: var(--sub); margin: 20px 0 10px; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .card { background: var(--pale); border-radius: 14px; padding: 14px 18px; font-size: clamp(15px, 1.4vw, 18px); line-height: 1.75; white-space: pre-wrap; word-break: break-word; border: 1px solid var(--line); }
+    .s3 .card { background: #fff7f1; border-color: #fbe3d3; }
+    .card .tag { display: block; font-size: 12px; color: var(--main); font-weight: 700; margin-bottom: 2px; }
+    .s3 .card .tag { color: var(--accent); }
+    .empty { color: var(--sub); font-size: 16px; padding: 6px 0; }
+
+    .people { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin-top: 18px; }
+    .person { background: #fff; border-radius: 20px; padding: 20px 22px; border: 1px solid var(--line); }
+    .person .who { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+    .person .who b { font-size: 18px; color: var(--main); }
+    .s3 .person .who b { color: var(--accent); }
+    .person .who span { font-size: 12px; color: var(--sub); }
+    .person dl { margin: 0; }
+    .person dt { font-size: 12px; color: var(--sub); font-weight: 700; margin-top: 12px; }
+    .person dd { margin: 2px 0 0; font-size: 15px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { background: var(--pale); border: 1px solid var(--line); border-radius: 20px; padding: 2px 10px; font-size: 13px; }
+    .s3 .chip { background: #fff7f1; border-color: #fbe3d3; }
+    .none { color: #b6c4c4; }
+
+    .demo { background: #fff6e0; color: #8a6a00; font-size: 13px; padding: 6px 12px; border-radius: 8px; }
+    .err { background: #ffe9ec; color: #d6455d; font-size: 13px; padding: 6px 12px; border-radius: 8px; }
+    @media (max-width: 720px) {
+      header { padding: 10px 16px; gap: 10px; }
+      .controls, main { padding-left: 16px; padding-right: 16px; }
+      .tab { flex: 1; justify-content: center; padding: 10px 12px; font-size: 15px; }
+      .q { padding: 20px 18px; }
+      .bar { grid-template-columns: 1fr 84px; gap: 4px 10px; }
+      .bar .lbl { grid-column: 1 / -1; text-align: left; }
+      .people { grid-template-columns: 1fr; }
+    }
+    @media print {
+      header { position: static; }
+      .views, .live { display: none; }
+      .q, .person { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img class="logo" src="ananta-logo.png" alt="Ananta">
+    <span class="ttl">回答一覧</span>
+    <span id="mode"></span>
+    <span class="spacer"></span>
+    <span class="live"><span class="dot" id="dot"></span><span id="updated">接続中…</span></span>
+    <span class="count">回答 <b id="total">0</b> 件</span>
+  </header>
+
+  <div class="controls">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-g="2" id="tab2">取り組んでいる方<b id="c2">0</b></button>
+      <button class="tab s3" role="tab" data-g="3" id="tab3">まだ取り組んでいない方<b id="c3">0</b></button>
+    </div>
+    <div class="views">
+      <button class="view" data-v="q">質問ごと</button>
+      <button class="view" data-v="p">1人ずつ</button>
+    </div>
+  </div>
+  <main id="body"></main>
+
+  <script src="questions.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const DEMO = params.has("demo");
+    const REFRESH_MS = 10000;
+    const GROUPS = { 2: "取り組んでいる", 3: "まだ取り組んでいない" };
+
+    let group = params.get("g") === "3" ? 3 : 2;
+    let view = params.get("v") === "p" ? "p" : "q";
+    let responses = [];
+    let lastSig = "";
+
+    const $ = (id) => document.getElementById(id);
+    function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+    if (DEMO) $("mode").innerHTML = `<span class="demo">デモ表示（サンプルデータ）</span>`;
+    else if (NOT_READY) $("mode").innerHTML = `<span class="err">保存先が未設定です（questions.js の GAS_URL）</span>`;
+    else if (!GAS_URL) $("mode").innerHTML = `<span class="demo">お試しモード（この端末の回答のみ）</span>`;
+
+    function setState(g, v) {
+      group = g; view = v;
+      const p = new URLSearchParams(location.search);
+      p.set("g", g); p.set("v", v);
+      history.replaceState(null, "", "?" + p.toString());
+      render();
+    }
+    document.querySelectorAll(".tab").forEach((b) => (b.onclick = () => setState(+b.dataset.g, view)));
+    document.querySelectorAll(".view").forEach((b) => (b.onclick = () => setState(group, b.dataset.v)));
+
+    // そのグループに見せる質問（Q1は振り分け用なので除く）
+    function groupQuestions(g) { return QUESTIONS.filter((q) => q.section === g || q.section === 4); }
+    function groupResponses(g) { return responses.filter((r) => r.answers.q1 === GROUPS[g]); }
+
+    function renderQuestion(q, list) {
+      const answered = list.filter((r) => r.answers[q.id] != null);
+      const secTag = q.section === 4 ? `<span class="sec all">全員への質問</span>` : `<span class="sec">${esc(SECTION_NAMES[q.section])}への質問</span>`;
+      let html = `<section class="q">${secTag}
+        <h2><span class="no">Q${q.no}</span>${esc(q.text)}</h2>
+        <div class="n">回答 ${answered.length} 人（対象 ${list.length} 人）${q.type === "multi" ? "・複数選択" : ""}</div>`;
+
+      if (q.type === "single" || q.type === "multi") {
+        const counts = q.options.map((o) => {
+          const l = optLabel(o);
+          return answered.filter((r) => (q.type === "single" ? r.answers[q.id] === l : r.answers[q.id].sel.includes(l))).length;
+        });
+        const max = Math.max(1, ...counts);
+        const denom = Math.max(1, answered.length);
+        html += `<div class="bars">` + q.options.map((o, i) => {
+          const c = counts[i];
+          return `<div class="bar ${c ? "" : "zero"}">
+            <div class="lbl">${esc(optLabel(o))}</div>
+            <div class="track"><div class="fill" style="width:${(c / max) * 100}%"></div></div>
+            <div class="val">${c}<small>人・${Math.round((c / denom) * 100)}%</small></div></div>`;
+        }).join("") + `</div>`;
+        if (q.type === "multi") {
+          const notes = [];
+          answered.forEach((r) => {
+            const n = r.answers[q.id].notes || {};
+            Object.keys(n).forEach((k) => notes.push({ tag: k, text: n[k] }));
+          });
+          if (notes.length) html += `<div class="notes"><h3>記入された内容</h3><div class="cards">` +
+            notes.map((n) => `<div class="card"><span class="tag">${esc(n.tag)}</span>${esc(n.text)}</div>`).join("") + `</div></div>`;
+        }
+      } else if (!answered.length) {
+        html += `<div class="empty">まだ回答はありません</div>`;
+      } else {
+        html += `<div class="cards">` + answered.slice().reverse().map((r) => `<div class="card">${esc(r.answers[q.id])}</div>`).join("") + `</div>`;
+      }
+      return html + `</section>`;
+    }
+
+    function answerHtml(q, a) {
+      if (a == null) return `<span class="none">（未回答）</span>`;
+      if (q.type === "multi") return `<div class="chips">` + a.sel.map((s) =>
+        `<span class="chip">${esc(s)}${a.notes && a.notes[s] ? "：" + esc(a.notes[s]) : ""}</span>`).join("") + `</div>`;
+      return esc(a);
+    }
+
+    function fmtTime(t) {
+      const d = new Date(t);
+      return isNaN(d) ? "" : d.toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
+    }
+
+    function renderPeople(qs, list) {
+      if (!list.length) return `<section class="q"><div class="empty">まだ回答はありません</div></section>`;
+      const total = list.length;
+      return `<div class="people">` + list.slice().reverse().map((r, i) => `<article class="person">
+          <div class="who"><b>${total - i}人目</b><span>${r.t ? esc(fmtTime(r.t)) : ""}</span></div>
+          <dl>${qs.map((q) => `<dt>Q${q.no} ${esc(q.text)}</dt><dd>${answerHtml(q, r.answers[q.id])}</dd>`).join("")}</dl>
+        </article>`).join("") + `</div>`;
+    }
+
+    function render() {
+      const c2 = groupResponses(2).length, c3 = groupResponses(3).length;
+      $("total").textContent = responses.length;
+      $("c2").textContent = c2; $("c3").textContent = c3;
+      document.querySelectorAll(".tab").forEach((b) => b.setAttribute("aria-selected", String(+b.dataset.g === group)));
+      document.querySelectorAll(".view").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.v === view)));
+      const qs = groupQuestions(group);
+      const list = groupResponses(group);
+      $("body").className = group === 3 ? "s3" : "";
+      $("body").innerHTML = view === "p" ? renderPeople(qs, list) : qs.map((q) => renderQuestion(q, list)).join("");
+    }
+
+    async function refresh(first) {
+      try {
+        responses = DEMO ? demoData() : await loadResponses();
+        $("dot").classList.remove("off");
+        $("updated").textContent = "最終更新 " + new Date().toLocaleTimeString("ja-JP");
+        const sig = responses.map((r) => r.id).join(",");
+        if (first || sig !== lastSig) { lastSig = sig; render(); }
+      } catch (e) {
+        $("dot").classList.add("off");
+        $("updated").textContent = "接続できません（自動で再試行します）";
+      }
+    }
+
+    function demoData() {
+      const pick = (arr, n) => arr.slice(0, n).map(optLabel);
+      const q = (id) => QUESTIONS.find((x) => x.id === id);
+      const texts = ["朝ごはんをたんぱく質中心にしたら午前中の集中力が続くようになりました", "食後に10分歩くのを習慣にしています", "甘いものがやめられない…", "家族と食事を分けるのが大変", "みなさんのおやつ事情を聞きたいです", "続けるコツを知りたい", "楽しみにしています！"];
+      const out = [];
+      for (let i = 0; i < 12; i++) {
+        const doing = i % 3 !== 0;
+        const a = { q1: doing ? "取り組んでいる" : "まだ取り組んでいない" };
+        if (doing) {
+          a.q2 = optLabel(q("q2").options[i % 5]);
+          a.q3 = { sel: pick(q("q3").options.slice(i % 4), 2), notes: {} };
+          a.q4 = { sel: pick(q("q4").options.slice(i % 6), 3), notes: {} };
+          a.q5 = texts[i % 2]; a.q6 = texts[2 + (i % 2)];
+          a.q7 = { sel: pick(q("q7").options.slice(i % 8), 3), notes: i === 1 ? { "数値が改善した": "HbA1c" } : {} };
+          if (i === 1) a.q7.sel.push("数値が改善した");
+          a.q8 = "体が軽い毎日を過ごしたい";
+        } else {
+          a.q9 = { sel: pick(q("q9").options.slice(i % 4), 2), notes: {} };
+          a.q10 = { sel: pick(q("q10").options.slice(i % 9), 3), notes: {} };
+          a.q11 = "何から始めたらいいかわからない";
+        }
+        a.q12 = texts[4 + (i % 2)];
+        if (i % 2) a.q14 = texts[6];
+        out.push({ id: "demo" + i, answers: a, t: new Date(Date.now() - (12 - i) * 3600e3).toISOString() });
+      }
+      return out;
+    }
+
+    if (NOT_READY && !DEMO) { responses = []; render(); }
+    else { refresh(true); if (!DEMO) setInterval(refresh, REFRESH_MS); }
+  </script>
+</body>
+</html>
