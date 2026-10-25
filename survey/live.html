@@ -169,8 +169,8 @@
           const c = counts[i];
           return `<div class="bar ${c > 0 && c === Math.max(...counts) ? "top" : ""}">
             <div class="lbl">${esc(optLabel(o))}</div>
-            <div class="track"><div class="fill" data-w="${(c / max) * 100}" style="width:${animate ? 0 : (c / max) * 100}%"></div></div>
-            <div class="val">${c}<small>人・${Math.round((c / denom) * 100)}%</small></div></div>`;
+            <div class="track"><div class="fill" data-w="${(c / denom) * 100}" style="width:${animate ? 0 : (c / denom) * 100}%"></div></div>
+            <div class="val">${Math.round((c / denom) * 100)}<small>%</small></div></div>`;
         }).join("") + `</div>`;
         if (q.type === "multi") {
           const notes = [];

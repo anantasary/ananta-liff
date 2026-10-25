@@ -249,8 +249,8 @@
           const c = counts[i];
           return `<div class="bar ${c ? "" : "zero"}">
             <div class="lbl">${esc(optLabel(o))}</div>
-            <div class="track"><div class="fill" style="width:${(c / max) * 100}%"></div></div>
-            <div class="val">${c}<small>人・${Math.round((c / denom) * 100)}%</small></div></div>`;
+            <div class="track"><div class="fill" style="width:${(c / denom) * 100}%"></div></div>
+            <div class="val">${Math.round((c / denom) * 100)}<small>%</small></div></div>`;
         }).join("") + `</div>`;
         if (q.type === "multi") {
           const notes = [];
