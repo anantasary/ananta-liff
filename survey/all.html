@@ -236,7 +236,7 @@
       const secTag = q.section === 4 ? `<span class="sec all">全員への質問</span>` : `<span class="sec">${esc(SECTION_NAMES[q.section])}への質問</span>`;
       let html = `<section class="q">${secTag}
         <h2><span class="no">Q${q.no}</span>${esc(q.text)}</h2>
-        <div class="n">回答 ${answered.length} 人（対象 ${list.length} 人）${q.type === "multi" ? "・複数選択" : ""}</div>`;
+        <div class="n">${[answered.length > 10 ? `回答 ${answered.length} 人（対象 ${list.length} 人）` : "", q.type === "multi" ? "複数選択" : ""].filter(Boolean).join("・")}</div>`;
 
       if (q.type === "single" || q.type === "multi") {
         const counts = q.options.map((o) => {
