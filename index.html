@@ -63,7 +63,7 @@
 
     async function main() { 
       // 2. 新しいLIFF IDに書き換え
-      await liff.init({ liffId: "2009808397-hQS6hoYO" }); 
+      await liff.init({ liffId: "2009800795-TjgaXLF7" }); 
       
       if (!liff.isLoggedIn()) {
         // ログインを促す（ここで通常、認証画面が出ます）
@@ -93,12 +93,14 @@
 
       try {
         // userIdを確実に取得してGASへ送る
-        const context = liff.getContext();
+        let context = null;
+        try { context = liff.getContext(); } catch (e) { context = null; }
         const userId = context ? context.userId : "";
 
         // 公式LINEのトークから開いたときは、結果をお客さん側のトークから送る
         // （公式LINEのチャット画面にも表示されるように）
-        const canSend = liff.isInClient() && liff.isApiAvailable("sendMessages");
+        let canSend = false;
+        try { canSend = liff.isInClient() && liff.isApiAvailable("sendMessages"); } catch (e) { canSend = false; }
 
         const res = await fetch(GAS_URL, { 
           method: "POST", 
