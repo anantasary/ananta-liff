@@ -133,17 +133,9 @@
           }
         }
         
-        if (type === "list" && canSend) {
-          // LINEのトークに届くので、画面には出さずに閉じる
-          liff.closeWindow();
-        } else if (type === "list") {
-          document.getElementById("inputForm").style.display = "none";
-          document.getElementById("resTxt").innerText = json.report; 
-          document.getElementById("resultArea").style.display = "block";
-        } else {
-          alert("LINEへ診断結果を送りました！トーク画面をご確認ください。");
-          liff.closeWindow();
-        }
+        // 9つの一覧も3つの解説も同じ出し方：結果はLINEのトークにだけ届けて、画面は閉じる
+        alert("LINEへ診断結果を送りました！トーク画面をご確認ください。");
+        liff.closeWindow();
       } catch (e) { 
         alert("通信エラーが発生しました。\n（" + step + "：" + (e && e.message ? e.message : e) + "）"); 
       } finally { 
