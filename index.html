@@ -93,6 +93,8 @@
       let step = "準備";
 
       try {
+        await liffReady;
+
         // お名前は任意。空欄のときはLINEの名前を使う
         let name = typedName;
         if (!name) {
@@ -148,7 +150,8 @@
         btn.disabled = false; btn.innerText = "診断結果を見る"; 
       }
     }
-    main();
+    // LINEとの接続の準備。診断ボタンを押したときは、これが終わるのを待つ
+    const liffReady = main().catch(function (e) { console.error(e); });
   </script>
 </body>
 </html>
