@@ -124,7 +124,10 @@
           }
         }
         
-        if (type === "list") {
+        if (type === "list" && canSend) {
+          // LINEのトークに届くので、画面には出さずに閉じる
+          liff.closeWindow();
+        } else if (type === "list") {
           document.getElementById("inputForm").style.display = "none";
           document.getElementById("resTxt").innerText = json.report; 
           document.getElementById("resultArea").style.display = "block";
