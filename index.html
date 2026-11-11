@@ -41,7 +41,7 @@
         <span>解説メッセージ（主要3数）</span>
       </label>
       
-      <span class="label-text">お名前</span>
+      <span class="label-text">お名前（任意）</span>
       <input id="name" type="text" placeholder="例：はなこ">
       
       <span class="label-text">生年月日（半角数字8桁）</span>
@@ -80,12 +80,12 @@
     
     async function send() {
       const btn = document.getElementById("sendBtn");
-      const name = document.getElementById("name").value;
+      const typedName = document.getElementById("name").value.trim();
       const birth = document.getElementById("birth").value;
       const type = document.querySelector('input[name="type"]:checked').value;
       
-      if (!name || birth.length !== 8) { 
-        alert("お名前と生年月日（8桁）を入力してください。"); 
+      if (birth.length !== 8) { 
+        alert("生年月日（8桁）を入力してください。"); 
         return; 
       }
       
@@ -93,6 +93,13 @@
       let step = "準備";
 
       try {
+        // お名前は任意。空欄のときはLINEの名前を使う
+        let name = typedName;
+        if (!name) {
+          try { const p = await liff.getProfile(); name = p.displayName || ""; } catch (e) { name = ""; }
+        }
+        if (!name) name = "あなた";
+
         // userIdを確実に取得してGASへ送る
         let context = null;
         try { context = liff.getContext(); } catch (e) { context = null; }
