@@ -96,11 +96,27 @@
         const context = liff.getContext();
         const userId = context ? context.userId : "";
 
+        // 公式LINEのトークから開いたときは、結果をお客さん側のトークから送る
+        // （公式LINEのチャット画面にも表示されるように）
+        const canSend = liff.isInClient() && liff.isApiAvailable("sendMessages");
+
         const res = await fetch(GAS_URL, { 
           method: "POST", 
-          body: JSON.stringify({ name, birth, type, userId: userId }) 
+          body: JSON.stringify({ name, birth, type, userId: userId, clientSend: canSend }) 
         });
         const json = await res.json();
+
+        if (canSend) {
+          try {
+            await liff.sendMessages([{ type: "text", text: json.report }]);
+          } catch (sendErr) {
+            // 送れなかったときは、今までどおり仕組みから送る（記録は重ねない）
+            await fetch(GAS_URL, {
+              method: "POST",
+              body: JSON.stringify({ name, birth, type, userId: userId, clientSend: false, noLog: true })
+            });
+          }
+        }
         
         if (type === "list") {
           document.getElementById("inputForm").style.display = "none";
